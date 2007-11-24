@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Encoding=UTF-8
+Name=Tarta
+GenericName=Tarta Puzzle Game
+Comment=Massive Time Destroyer
+Exec=/opt/tarta/tarta
+#Icon=tarta.png
+Categories=Application;System
+X-Desktop-File-Install-Version=0.3
+

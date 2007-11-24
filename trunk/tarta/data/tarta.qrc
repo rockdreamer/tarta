@@ -1,0 +1,9 @@
+<RCC>
+<qresource prefix="/" >
+
+<file>credits.html</file>
+<file>levels/default/background.svg</file>
+<file>levels/default/target.svg</file>
+<file>levels/default/boardimg.png</file>
+</qresource>
+</RCC>

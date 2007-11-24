@@ -1,0 +1,109 @@
+Come si fa la build su mac
+-------------------
+Deve essere installata la Qt con la libreria buildata come Framework
+Devono essere installati i Developer Tools
+La variabile d'ambiente QTDIR deve essere settata correttamente
+Eseguire ./mac-build pkg per creare un pacchetto dmg distribuibile
+Eseguire ./mac-build clean per eliminare sorgenti e pacchetto
+
+Come si fa la build su linux
+----------------------------
+Devono essere installate:
+ - Le  Qt (>4.1) compilate come framework
+   -  esplodere il tar.gz 
+   -  ./configure -help ; per vedere le opzioni
+   -  usare "-static" su RHES e solaris
+   -  usare "-prefix /path/to/qt"
+   - ./configure -static -prefix /path/to/qt && make && make install
+ - Settata QTDIR=/path/to/qt
+ - settata PATH=$PATH:$QTDIR/bin
+ - [debian] selezionate le utility di qt4: uic qmake assistant designer linguist lrelease lupdate moc qtconfig
+   - # sudo update-alternatives --config <PKG>; 
+ - qmake && make
+ - creare l'rpm da root # ./unix-build.sh rpm
+
+Come si fa la build su Windows
+------------------------------
+Devono essere installati:
+ - Le Qt (>4.1) in C:\Qt\versione
+ - mingw per il gcc (l'installer delle Qt può scaricare una versione)
+ - NSIS
+
+Per creare l'eseguibile bisogna
+- aprire la console di Qt
+- andare nella directory di keycluster gui
+- eseguire qmake
+- eseguire make -f Makefile.release
+
+Per creare l'installer bisogna
+- modificare il file packaging/win/kcgui.nsi con
+ - version number
+ - build number
+ (Basta aver usato di recente lo script update-versions.sh)
+ - Path delle librerie qt e della libreria di mingw
+- creare l'installer facendo compilare il file win/kcgui.nsi
+
+Cosa va dove
+-------------
+La versione dell'applicazione va impostata nel file VERSION.
+Lo script update-version.sh va eseguito ogni volta che cambia la VERSION o la BUILD 
+- win/kcgui.nsi
+
+Come si documenta il codice
+---------------------------
+Usando doxygen: ecco una guida rapida di riferimento.
+
+\attention { testo da segnalare come importante }
+\author {lista degli autori}
+\version { numero versione del file}
+\date {data dell'ultima modifica del file}
+\brief { descrizione breve della classe, funzione, enum ecc}
+\bug { descrizione del bug }
+\warning { descrizione del warning, non segnalato dal compilatore }
+\todo { cosa da fare: sara' messa nella lista dei todo }
+\deprecated { funzione deprecata e motivazione }
+\par [(titolo paragrafo)] { paragrafo }
+\param[in,out] dest Parametro di funzione, in e out indicano la direzione di scrittura.
+\sa funzione da vedere (vedi anche)
+\since { versione o data dalla quale e' disponibile la funzione }
+\anchor <nomepunto> (aggiunge un punto di riferimento)
+\ref nomepunto (crea un link al punto di riferimento)
+\link (idem)
+\b (bold)
+\c o \p (monospace)
+\e o \em (italics)
+\n (cambia linea)
+\li (elemento aggiunge un elemento a una lista)
+\code codicecodice \endcode (inserisce codice C/C++ colorato)
+\verbatim blabla \endverbatim (include il testo cosi' com'e')
+
+Vedere anche il wiki del trac
+
+Come si pulisce il codice
+-------------------------
+Usare la funzione "Modifica->Riformatta Sorgente" di KDevelop avendo aperto i sorgenti con il progetto incluso
+
+Come si usano gli header
+-------------------------
+
+Gli header devono avere sempre i guard, ossia
+/* Copyright info */
+#ifndef KC_NOMEHEADER_H
+#define KC_NOMEHEADER_H
+
+/* codice */
+
+#endif /* KC_NOMEHEADER_H */
+
+Gli header devono avere una sezione che indichi la licenza, gli autori (con anni di modifiche)
+
+Nei file .cpp i header vanno inclusi nel seguente ordine
+
+- header di sistema
+- kcdefines.h
+- header di sistema che vanno caricati in base a valori nel config.h
+- header locali
+
+Le classi di kcgui fanno parte del namespace kcGui, ricorda di usare gli using namespace corretti...
+
+
