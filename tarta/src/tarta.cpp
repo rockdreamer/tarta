@@ -26,6 +26,7 @@
 #include <QStatusBar>
 #include "tarta.h"
 #include "singleplayerview.h"
+#include "leveldata.h"
 
 Tarta::Tarta() : QMainWindow(0)
 {
@@ -44,8 +45,13 @@ Tarta::Tarta() : QMainWindow(0)
     help->addAction( tr("What's &This"), this, SLOT(whatsThis()), Qt::SHIFT + Qt::Key_F1);
 
 	this->setAttribute(Qt::WA_Hover);
-    e = new SinglePlayerView( this, "testlevel");
-    e->setFocus();
+	currentLevel = new LevelData();
+	
+	currentLevel->setBaseDir(":/levels/default/");
+    
+	e = new SinglePlayerView(currentLevel, this);
+    
+	e->setFocus();
     setCentralWidget( e );
     
 	setWindowTitle(tr("Tarta"));

@@ -21,6 +21,7 @@
 #include "boarditem.h"
 #include "boardmodel.h"
 #include "pieceitem.h"
+#include "leveldata.h"
 #include <QCoreApplication>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
@@ -34,20 +35,27 @@
 #include <QDebug>
 #include <QFile>
 
-static const int PieceNum = 0;
+extern const int PieceNum = 0;
 static const int Sensitivity = 5;
  
-BoardItem::BoardItem(const QString& levelname, QGraphicsItem *parent) 
+BoardItem::BoardItem(LevelData *data, QGraphicsItem *parent) 
 	: QGraphicsItem(parent)
 {
 	track=FALSE;
-	this->levelname=levelname;	
+	//this->leveldata=data;	
 	animation = new QGraphicsItemAnimation();
 	timer = new QTimeLine(300);
 	animation->setTimeLine(timer);
 	
-	model = new BoardModel();
-	loadData();
+	model = new BoardModel(
+		data->pieceRows(),
+		data->pieceColumns(),
+		data->placeRows(),
+		data->placeColumns()
+	);
+	pieces=data->pieces();
+	sx=(*pieces)[0]->boundingRect().width();
+	sy=(*pieces)[0]->boundingRect().height();
 }
 
 
@@ -65,79 +73,6 @@ void BoardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 //	painter->drawRect(0, 0, sx*model->placeColumns(), sy*model->placeRows());
 }
 
-void BoardItem::loadData() 
-{
-	QPixmap *wholepix=NULL;
-	target = NULL;
-	//Load the board image
-	if ((!wholepix) && QFile::exists(":/levels/"+levelname+"/boardimg.png")){
-		wholepix = new QPixmap(":/levels/"+levelname+"/boardimg.png");
-		qDebug() << "Loaded board img from :/levels/"+levelname+"/boardimg.png";
-		
-	}
-	if ((!wholepix) && QFile::exists(":/levels/"+levelname+"/boardimg.jpg")){
-		wholepix = new QPixmap(":/levels/"+levelname+"/boardimg.jpg");
-	}
-	if ((!wholepix) && QFile::exists(":/levels/default/boardimg.png")){
-		wholepix = new QPixmap(":/levels/default/boardimg.png");
-	}
-	
-	if (!wholepix){
-		qDebug() << "Couldn't load board img";
-		return;
-	}
-
-	uint p= model->pieces();
-	uint pc=model->pieceColumns();
-	uint pr=model->pieceRows();
-	sx = wholepix->width()/pc;
-	sy = wholepix->height()/pr;
-	
-	qDebug() << "p" << p << "pc" << pc << "pr" << pr;
-	qDebug() << "w" << wholepix->width() << "h" << wholepix->height()
-			<< "sx" << sx << "sy" << sy;
-			
-	if (QFile::exists(":/levels/"+levelname+"/target.svg")){
-		target = new QGraphicsSvgItem(":/levels/"+levelname+"/target.svg");
-	} else {
-		if (QFile::exists(":/levels/default/target.svg")){
-			target = new QGraphicsSvgItem(":/levels/default/target.svg");
-		}
-	}
-	
-	if (!target) {
-		qDebug() << "Could not load Target svg";
-		return;
-	}
-
-	qreal scalevalue=qMin( 
-		(qreal)sx/(qreal)target->boundingRect().width() ,
-		(qreal)sy/(qreal)target->boundingRect().height());
-	target->scale(scalevalue,scalevalue);
-	target->setZValue(1000);
-	target->setVisible(false);
-
-	pieces.resize(p);	
-	for (uint i=0;i<p;i++){
-	
-		PieceItem *item= 
-			new PieceItem(wholepix->copy(
-				(i%pc)*sx, (i/pc)*sy, sx, sy) , target, this);
-		
-		qDebug() << "Created pixmap from (" 
-			<< (i%pc)*sx << "," << (i/pc)*sy << ","
-			<< sx << "," << sy << ")";
-		item->setPos((i%pc)*sx,(i/pc)*sy );
-		pieces[i]=item;
-		item->setZValue(100);
-		item->setVisible(false);
-		item->setData(PieceNum,i);
-	}
-	
-	delete wholepix;
-	wholepix=NULL;
-}
-
 void BoardItem::movePiece(QGraphicsItem *item, uint x, uint y){
 	qDebug() << "moving item"<<  item->data(PieceNum).toInt() << "to" << x*sx << "," << y*sy;
 	animation->setItem(item);
@@ -146,42 +81,48 @@ void BoardItem::movePiece(QGraphicsItem *item, uint x, uint y){
 }
 
 void BoardItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
- {
-     if (QGraphicsItem *item = scene()->itemAt(event->pos())) {
-		if (QGraphicsItem *p=item->parentItem())
-				item=p;
-         qDebug() << "You clicked on item" << item->data(PieceNum);
-		 lastpos=event->scenePos();
-		 lastitem=item->data(PieceNum).toInt();
-		 track=true;
-//		 event->setAccepted(true);
-     } else {
-         qDebug() << "You didn't click on an item.";
-//		 event->setAccepted(true);
-     }
- }
+{
+	QList<QGraphicsItem *>  items = scene()->items(event->scenePos());
+	bool ok=false;
+	if (items.isEmpty()){
+		qDebug() << "You didn't click on an item.";
+		return;
+	}
+	qDebug() << "there are" << items.size() << "items at pos" << event->scenePos();
+	for (int i = 0; i < items.size(); ++i) {
+		int l = (items.at(i))->data(PieceNum).toInt(&ok);
+		if (ok) {
+			lastpos=event->scenePos();
+			lastitem=l;
+			track=true;
+			qDebug() << "You clicked on item" << lastitem << "number" << i<< "in the position children items";
+			return;
+		}
+	}
+	qDebug() << "No PieceItems.";
+	return;
+}
  
  
 void BoardItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 	Q_UNUSED(event);
 	track=FALSE;
-//	event->setAccepted(true);
 }
 
 void BoardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
 	qDebug() << "Got MouseDoubleClick on BoardItem";
-	//Q_UNUSED(event);
 	
 	uint piecenum;
 	if (model->insertPiece(piecenum)) {
 		qDebug() << "Piece" << piecenum << "inserted";
-		pieces[piecenum]->setPos(0,0);
-		pieces[piecenum]->setVisible(true);
+		(*pieces)[piecenum]->setZValue(100);
+		(*pieces)[piecenum]->setPos(0,0);
+		(*pieces)[piecenum]->setVisible(true);
 		update();
 		QCoreApplication::processEvents();
-		movePiece(pieces[piecenum],model->column(piecenum), model->row(piecenum));
+		movePiece((*pieces)[piecenum],model->column(piecenum), model->row(piecenum));
 	}
 	QGraphicsItem::mouseDoubleClickEvent(event);
 }
@@ -189,7 +130,6 @@ void BoardItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void BoardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
 	if (!track){
-//		event->setAccepted(false);
 		return;
 	}
 
@@ -198,27 +138,25 @@ void BoardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	if (xdiff>Sensitivity){
 		qDebug() << "Move " << lastitem << "right.";
 		model->movePiece(lastitem, RIGHT);
-		movePiece(pieces[lastitem],model->column(lastitem), model->row(lastitem));
+		movePiece((*pieces)[lastitem],model->column(lastitem), model->row(lastitem));
 		track=FALSE;
 	}
 	if (xdiff<-Sensitivity){
 		qDebug() << "Move " << lastitem << "left.";
 		model->movePiece(lastitem, LEFT);
-		movePiece(pieces[lastitem],model->column(lastitem), model->row(lastitem));
+		movePiece((*pieces)[lastitem],model->column(lastitem), model->row(lastitem));
 		track=FALSE;
 	}
 	if (ydiff<-Sensitivity){
 		qDebug() << "Move " << lastitem << "up.";
 		model->movePiece(lastitem, UP);
-		movePiece(pieces[lastitem],model->column(lastitem), model->row(lastitem));
+		movePiece((*pieces)[lastitem],model->column(lastitem), model->row(lastitem));
 		track=FALSE;
 	}
 	if (ydiff>Sensitivity){
 		qDebug() << "Move " << lastitem << "down.";
 		model->movePiece(lastitem, DOWN);
-		movePiece(pieces[lastitem],model->column(lastitem), model->row(lastitem));
+		movePiece((*pieces)[lastitem],model->column(lastitem), model->row(lastitem));
 		track=FALSE;
 	}
-//	event->setAccepted(true);
-	
 }

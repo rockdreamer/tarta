@@ -32,13 +32,13 @@ class QGraphicsItemAnimation;
 class QTimeLine;
 class PieceItem;
 class QGraphicsSvgItem;
+class LevelData;
 
 class BoardItem: public QGraphicsItem
 {
 
 public:
-    BoardItem(const QString& levelname, QGraphicsItem *parent=0);
-	void loadData();
+    BoardItem(LevelData *leveldata, QGraphicsItem *parent=0);
 	QRectF boundingRect() const;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
@@ -51,8 +51,8 @@ protected:
 private:
 	void movePiece(QGraphicsItem *item, uint x, uint y);
 
-	QString levelname;
-    QVector<PieceItem*> pieces;
+	//LevelData *leveldata;
+	QVector<PieceItem*> *pieces;
     QPointF lastpos;
 	QGraphicsItemAnimation *animation;
 	QTimeLine *timer;

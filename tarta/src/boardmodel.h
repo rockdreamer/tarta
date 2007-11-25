@@ -24,13 +24,12 @@
 
 typedef unsigned int uint;
 
-
 enum Direction {UP, DOWN, LEFT, RIGHT};
 
 class BoardModel{
 
 public:
-	BoardModel(uint piecerows=5, uint piececolumns=8, uint placerows=6, uint placecols=8);
+	BoardModel(uint piecerows=5, uint piececolumns=8, uint placerows=7, uint placecols=8);
 	~BoardModel();
 	uint pieces();
 	uint pieceColumns();

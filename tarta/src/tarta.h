@@ -24,6 +24,7 @@
 #include <QMainWindow>
 #include <QString>
 
+class LevelData;
 class SinglePlayerView;
 
 class Tarta: public QMainWindow
@@ -33,6 +34,7 @@ class Tarta: public QMainWindow
 public:
     Tarta();
     ~Tarta();
+	void loadLevelName(QString levelname);
 
 private slots:
     void about();
@@ -40,7 +42,8 @@ private slots:
 
 private:
     SinglePlayerView *e;
-    QString filename;
+	LevelData *currentLevel;
+	
 };
 
 
