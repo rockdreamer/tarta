@@ -19,14 +19,16 @@ src/main.cpp \
 src/boarditem.cpp \
 src/boardmodel.cpp \
 src/pieceitem.cpp \
-src/singleplayerview.cpp
+src/singleplayerview.cpp \
+src/leveldata.cpp \
            
 HEADERS += \
 src/tarta.h \
 src/boarditem.h \
 src/boardmodel.h \
 src/pieceitem.h \
-src/singleplayerview.h
+src/singleplayerview.h \
+src/leveldata.h \
 
 RESOURCES  = data/tarta.qrc
 

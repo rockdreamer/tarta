@@ -2,8 +2,13 @@
 <qresource prefix="/" >
 
 <file>credits.html</file>
+<file>levels/default/level.txt</file>
 <file>levels/default/background.svg</file>
 <file>levels/default/target.svg</file>
 <file>levels/default/boardimg.png</file>
+<file>levels/testlevel/level.txt</file>
+<file>levels/testlevel/background.svg</file>
+<file>levels/testlevel/target.svg</file>
+<file>levels/testlevel/boardimg.jpg</file>
 </qresource>
 </RCC>

@@ -35,7 +35,7 @@ PieceItem::PieceItem(const QPixmap& pixmap, QGraphicsItem *target, QGraphicsItem
 {
 	Q_UNUSED(parent);
 	setAcceptsHoverEvents ( true );
-
+	setHandlesChildEvents(true);
 	pix=new QGraphicsPixmapItem(pixmap, this);
 	pix->setZValue(500);
 	this->target=target;
@@ -58,7 +58,7 @@ PieceItem::PieceItem(const QPixmap& pixmap, QGraphicsItem *target, QGraphicsItem
 
 QRectF PieceItem::boundingRect() const
 {
-	qDebug() << "returned" << pix->boundingRect() << "as piece boundingrect";
+	//qDebug() << "returned" << pix->boundingRect() << "as piece boundingrect";
 	return pix->boundingRect();
 }
 

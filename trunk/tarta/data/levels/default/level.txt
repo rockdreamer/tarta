@@ -1,0 +1,43 @@
+--TARTACONFVER:1--
+// 
+// Sample level configuration file
+// values are stored in name|value|value|value|....| format
+// order is preserved, | is not a valid name or value character, no escaping is performed
+
+// Obligatory, ya know
+name|default level|
+
+////////////////////////////////////////////////////////////////////
+// Scene and graphics setup
+////////////////////////////////////////////////////////////////////
+// first two numbers give the upper left point, second two give the size of the item
+
+// optional, alternative board where the pic goes
+boardrect|100|10|700|500|
+
+// optional, alternative timer rectangle
+timerect|10|710|700|10|
+
+// optional, use RGB numbers or svg color names
+backgroundcolor|#000000|
+
+// optional
+backgroundpic|background.svg|
+
+// optional
+targetpic|target.svg|
+
+// optional
+boardpic|boardimg.png|
+
+//////////////////////////////////////////////////////////////////
+// Level options
+//////////////////////////////////////////////////////////////////
+playtime|300|
+// if successfully finished
+livesawarded|3|
+
+// piece rows, piece columns, position rows, position columns
+boardgeometry|5|8|7|8|
+
+// TODO: Add more stuff here to make tarta rock even more!

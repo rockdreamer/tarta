@@ -44,6 +44,7 @@ BoardModel::BoardModel(uint piecerows, uint piececolumns, uint placerows, uint p
 	}
 
 	initRandArray();
+	qDebug() << "Created Board model" << piecerows << piececolumns << placerows << placecolumns;
 }
 
 BoardModel::~BoardModel()

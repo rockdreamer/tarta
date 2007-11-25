@@ -27,25 +27,29 @@ class QGraphicsScene;
 class QResizeEvent;
 class BoardItem;
 class QGraphicsSvgItem;
+class LevelData;
 
 class SinglePlayerView: public QGraphicsView
 {
     Q_OBJECT
 
 public:
-    SinglePlayerView(QWidget *parent = 0, const QString& levelname="");
+    SinglePlayerView(LevelData *data, QWidget *parent = 0);
     ~SinglePlayerView();
 	
 public slots:
-
+	void setLevelData(LevelData *newData);
+	void onDataLoading(int percent, const QString& description);
+	void onDataError(int code, const QString& description);
+	void onDataSuccess();
+		
 protected:
 	void resizeEvent(QResizeEvent *event);
 
 private:
 	QGraphicsScene *scene;
-	QString levelname;
+	LevelData *data;
 	BoardItem *board;
-	QGraphicsSvgItem *bg;
 };
 
 
