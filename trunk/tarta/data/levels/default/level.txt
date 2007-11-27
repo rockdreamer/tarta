@@ -13,7 +13,7 @@ name|default level|
 // first two numbers give the upper left point, second two give the size of the item
 
 // optional, alternative board where the pic goes
-boardrect|100|10|700|500|
+boardrect|200|55|800|600|
 
 // optional, alternative timer rectangle
 timerect|10|710|700|10|

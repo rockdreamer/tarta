@@ -14,6 +14,7 @@
 #include <cassert>
 #include <QDebug>
 #include <QDateTime>
+#include <QList>
 #include <math.h>
 
 using namespace std;
@@ -21,36 +22,37 @@ using namespace std;
 BoardModel::BoardModel(uint piecerows, uint piececolumns, uint placerows, uint placecolumns)
 {
 	assert(piecerows&&piececolumns&&placerows&&placecolumns);
-	
-	brd=NULL;
-	positions=NULL;
+
+	// Initialise board numeric values
 	m_rows=piecerows;
 	m_cols=piececolumns;
 	m_placerows=placerows;
 	m_placecols=placecolumns;
-	m_pieces=piecerows*piececolumns;
-	m_places=placerows*placecolumns;
-	m_inboard=0;
-	
-	brd = new uint[m_places];
-	
+	m_pieces=piecerows*piececolumns;	// this shows how many pieces the picture is built of
+	m_places=placerows*placecolumns;	// this shows how many free spaces the 
+										// board has in the beginning
+	m_inboard=0; // this shows how many pieces have been inserted in the board currently
+
+	// brd values can range between 0 and m_pieces
+	// m_pieces means there is no piece in that position
 	for (uint i=0; i<(m_places);i++){
-		brd[i]=m_pieces;
-	}
-	
-	positions = new uint[m_pieces];
-	for (uint i=0; i<m_pieces;i++){
-		positions[i]=m_places;
+		brd.append(m_pieces);
 	}
 
+	// positions values range between 0 and m_places
+	// m_places means a piece is not on the board
+	for (uint i=0; i<m_pieces;i++){
+		positions.append(m_places);
+	}
+
+	// randomise the order pieces are presented to the user
 	initRandArray();
+	
 	qDebug() << "Created Board model" << piecerows << piececolumns << placerows << placecolumns;
 }
 
 BoardModel::~BoardModel()
 {
-	if (brd) delete [] brd;
-	if (positions) delete [] positions;
 }
 
 uint BoardModel::pieces()
@@ -78,6 +80,11 @@ uint BoardModel::placeRows()
 	return m_placerows;
 }
 
+bool BoardModel::inBoard(uint piece)
+{
+	return positions[piece]!=m_places;
+}
+
 uint BoardModel::pieceAt(uint row,uint column)
 {
 	return brd[(row*m_placecols)+column];
@@ -103,11 +110,36 @@ bool BoardModel::insertPiece(uint& piece)
 	if (m_inboard==m_pieces) return false; //all pieces are in!
 
 	// Side effect!
-	piece=randpieces[m_inboard];
+	piece=randpieces.takeFirst();
 	brd[0]=piece;
 	positions[piece]=0;
 	movePiece(piece,RIGHT);
 	m_inboard++;
+	return true;
+}
+
+bool BoardModel::removePiece(uint piece)
+{
+	// The piece is not in the board!!!
+	if (positions[piece]==m_places) return false;
+
+	// update the board
+	brd[positions[piece]]=m_pieces;
+	// update piece position
+	positions[piece]=m_places;
+
+	// find a random piece in the random pieces array
+	uint r=rand();
+	float w=float(r)/RAND_MAX;
+	r= floor((randpieces.size())*w);
+
+	//put the piece at the end of the array
+	randpieces.append(piece);
+	//and swap it with the other random piece
+	randpieces.swap(r,randpieces.size());
+	
+	m_inboard--;
+	qDebug() << "Removed piece" << piece << "from board";
 	return true;
 }
 
@@ -130,10 +162,19 @@ void BoardModel::movePiece(uint piece, Direction dir)
 		}
 		break;
 	case LEFT:
+		if (positions[piece]==0) { // special case... while below doesn't check it...
+			removePiece(piece); 
+			return;
+		}
 		lastpos=row(piece)*m_placecols; // start of row
 		while (newpos>lastpos){
 			if (brd[newpos-1]==m_pieces){ //next cell is empty, update position
 				newpos--;
+				if (newpos==0){
+					// This is a special case, we let the piece out
+					removePiece(piece);
+					return;
+				}
 			} else {
 				break;
 			}
@@ -168,19 +209,15 @@ void BoardModel::movePiece(uint piece, Direction dir)
 
 void BoardModel::initRandArray()
 {
-	uint i,t,r,first,second;
+	uint i,r,first,second;
 	float w;
 	
 	m_inboard=0;
 	// Init randpieces vector
-	randpieces=new uint[m_pieces];
 	for (i=0;i<m_pieces;i++){
-		randpieces[i]=i;
+		randpieces.append(i);
 	}
-	
-	// Prime rand function
-	srand(QDateTime::currentDateTime().toTime_t());
-	
+		
 	// Exchange randpieces items randomly
 	for (i=0; i < m_pieces*2; i++){
 		r=rand();
@@ -190,9 +227,7 @@ void BoardModel::initRandArray()
 		float w=float(r)/RAND_MAX;
 		second = floor(m_pieces*w);
 		qDebug() << "Exchanging" << first << "and" << second;
-		t=randpieces[first];
-		randpieces[first]=randpieces[second];
-		randpieces[second]=t;
+		randpieces.swap(first,second);
 	}
 
 	for (i=0;i<m_pieces;i++)

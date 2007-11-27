@@ -19,10 +19,15 @@
  ***************************************************************************/
 
 #include <QApplication>
+#include <QDatetime>
 #include "tarta.h"
 
 int main( int argc, char ** argv ) {
     QApplication a( argc, argv );
+
+	// Prime rand function
+	srand(QDateTime::currentDateTime().toTime_t());
+
     Tarta * mw = new Tarta();
     mw->show();
     a.connect( &a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()) );

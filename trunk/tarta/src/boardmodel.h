@@ -22,8 +22,8 @@
 #ifndef BOARDMODEL_H
 #define BOARDMODEL_H
 
+#include <QList>
 typedef unsigned int uint;
-
 enum Direction {UP, DOWN, LEFT, RIGHT};
 
 class BoardModel{
@@ -38,15 +38,21 @@ public:
 	uint placeRows();
 	uint row(uint piece);
 	uint column(uint piece);
+	bool inBoard(uint piece);
 	uint pieceAt(uint row,uint column);
+	/*
+	 * Side effect on value
+	 */
 	bool insertPiece(uint& piece);
+	bool removePiece(uint piece);
 	bool isComplete();
 	void movePiece(uint piece, Direction dir);
+
 private:
 	void initRandArray();
-	uint *randpieces;
-	uint *brd;
-	uint *positions;
+	QList<uint> randpieces;
+	QList<uint> brd;
+	QList<uint> positions;
 	uint m_rows,m_cols,m_pieces,m_places,m_placerows,m_placecols,m_inboard;
 };
 
