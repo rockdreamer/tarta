@@ -144,7 +144,20 @@ void BoardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	if (xdiff<-Sensitivity){
 		qDebug() << "Move " << lastitem << "left.";
 		model->movePiece(lastitem, LEFT);
-		movePiece((*pieces)[lastitem],model->column(lastitem), model->row(lastitem));
+		if (model->inBoard(lastitem)) {
+			movePiece((*pieces)[lastitem],model->column(lastitem), model->row(lastitem));
+		} else {
+			movePiece((*pieces)[lastitem],0, 0);
+			// wait a bit
+			track=false; // do it now or the mouse will screw us...
+			update();
+			QCoreApplication::processEvents();
+			update();
+			QCoreApplication::processEvents();
+			update();
+			QCoreApplication::processEvents();
+			(*pieces)[lastitem]->setVisible(false);		
+		}
 		track=FALSE;
 	}
 	if (ydiff<-Sensitivity){

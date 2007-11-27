@@ -47,7 +47,7 @@ Tarta::Tarta() : QMainWindow(0)
 	this->setAttribute(Qt::WA_Hover);
 	currentLevel = new LevelData();
 	
-	currentLevel->setBaseDir(":/levels/default/");
+	currentLevel->setBaseDir("/Users/rdfm/tarta/data/levels/default/");
     
 	e = new SinglePlayerView(currentLevel, this);
     
@@ -55,7 +55,8 @@ Tarta::Tarta() : QMainWindow(0)
     setCentralWidget( e );
     
 	setWindowTitle(tr("Tarta"));
-	
+	resize(800,600);
+
 	statusBar()->showMessage( tr("Ready"), 2000 );
 	
 }
