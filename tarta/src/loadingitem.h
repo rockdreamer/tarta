@@ -18,31 +18,29 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
  
-#ifndef PIECEITEM_H
-#define PIECEITEM_H
+#ifndef LOADINGITEM_H
+#define LOADINGITEM_H
 
 #include <QGraphicsItem>
+#include <QObject>
 
-class QGraphicsSvgItem;
-class QPixmap;
-
-class PieceItem: public QGraphicsItem
+class LoadingItem: public QObject, public QGraphicsItem
 {
+	Q_OBJECT
+	
 public:
-    PieceItem(const QPixmap& pixmap, QGraphicsItem *target, QGraphicsItem *parent=0);
+    LoadingItem(QGraphicsItem *parent=0);
 	QRectF boundingRect() const;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-	QPainterPath shape () const; 
-protected:
-	void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
-	void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
-	
+
+public slots:
+	void setPct(int percent, const QString& msg="");
+
 private:
-	QGraphicsItem *target;
-	QGraphicsPixmapItem *pix;
-	QPointF tpos;
 	QRectF boundrect;
-	QPainterPath path;
+	QGraphicsTextItem *t;
+	int pct;
+	
 };
 
 

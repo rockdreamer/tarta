@@ -28,7 +28,9 @@ class QResizeEvent;
 class BoardItem;
 class QGraphicsSvgItem;
 class LevelData;
-
+class BoardModel;
+class LoadingItem;
+class MsgItem;
 class SinglePlayerView: public QGraphicsView
 {
     Q_OBJECT
@@ -36,20 +38,30 @@ class SinglePlayerView: public QGraphicsView
 public:
     SinglePlayerView(LevelData *data, QWidget *parent = 0);
     ~SinglePlayerView();
+	void setLevelData(LevelData *newData);
+	void initScene();
 	
 public slots:
-	void setLevelData(LevelData *newData);
+	void startView();
+	void showMsg(const QString& msg);
+	void hideMsg();
+	void hideLoading();
 	void onDataLoading(int percent, const QString& description);
 	void onDataError(int code, const QString& description);
 	void onDataSuccess();
+	void onBoardComplete();
 		
 protected:
 	void resizeEvent(QResizeEvent *event);
 
 private:
+	void centerItem(QGraphicsItem *it);
 	QGraphicsScene *scene;
+	LoadingItem *loading;
+	MsgItem *msg;
 	LevelData *data;
 	BoardItem *board;
+	BoardModel *model;
 };
 
 

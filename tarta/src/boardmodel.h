@@ -23,14 +23,18 @@
 #define BOARDMODEL_H
 
 #include <QList>
+#include <QObject>
+
 typedef unsigned int uint;
 enum Direction {UP, DOWN, LEFT, RIGHT};
 
-class BoardModel{
-
+class BoardModel: public QObject
+{
+	Q_OBJECT
+	
 public:
-	BoardModel(uint piecerows=5, uint piececolumns=8, uint placerows=7, uint placecols=8);
-	~BoardModel();
+	BoardModel(uint piecerows=5, uint piececolumns=8, uint placerows=7, uint placecols=8, QObject* parent=0);
+
 	uint pieces();
 	uint pieceColumns();
 	uint pieceRows();
@@ -48,6 +52,11 @@ public:
 	bool isComplete();
 	void movePiece(uint piece, Direction dir);
 
+signals:
+	void boardComplete();
+	void rowComplete(int row);
+	void columnComplete(int column);
+	
 private:
 	void initRandArray();
 	QList<uint> randpieces;

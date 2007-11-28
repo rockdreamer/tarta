@@ -7,21 +7,16 @@
  *
  */
 
-//#define NDEBUG
-
+#include "defines.h"
 #include "boardmodel.h"
-#include <iostream>
-#include <cassert>
 #include <QDebug>
 #include <QDateTime>
 #include <QList>
 #include <math.h>
 
-using namespace std;
-
-BoardModel::BoardModel(uint piecerows, uint piececolumns, uint placerows, uint placecolumns)
+BoardModel::BoardModel(uint piecerows, uint piececolumns, uint placerows, uint placecolumns, QObject *parent)
+	:QObject(parent)
 {
-	assert(piecerows&&piececolumns&&placerows&&placecolumns);
 
 	// Initialise board numeric values
 	m_rows=piecerows;
@@ -47,12 +42,10 @@ BoardModel::BoardModel(uint piecerows, uint piececolumns, uint placerows, uint p
 
 	// randomise the order pieces are presented to the user
 	initRandArray();
-	
-	qDebug() << "Created Board model" << piecerows << piececolumns << placerows << placecolumns;
-}
 
-BoardModel::~BoardModel()
-{
+	#ifdef DEBUG
+	qDebug() << "Created Board model" << piecerows << piececolumns << placerows << placecolumns;
+	#endif
 }
 
 uint BoardModel::pieces()
@@ -92,16 +85,62 @@ uint BoardModel::pieceAt(uint row,uint column)
 
 uint BoardModel::row(uint piece)
 {
-	assert (piece<m_pieces);
-
 	return positions[piece]/m_placecols;
 }
 
 uint BoardModel::column(uint piece)
 {
-	assert (piece<m_pieces);
-
 	return positions[piece]%m_placecols;
+}
+
+bool BoardModel::isComplete()
+{
+	uint curpiece=0;
+	
+	// cycle all pieces
+	for (curpiece=0;curpiece<m_pieces-1;curpiece++){
+		#ifdef BMODEL_DEBUG
+		qDebug() << "checking piece" << curpiece;
+		#endif
+		
+		if ((curpiece%m_cols)==0){ // if we are on the first piece in a row
+			if ( (curpiece/m_cols)!=m_rows-1) // if we are not on the last row
+				if ( // check the position of the piece that should be right below
+					 // if it's not right below, we're no go
+					(column(curpiece) != column(curpiece+m_cols)) ||
+					( row(curpiece) != (row(curpiece+m_cols)-1) )
+					) {
+					#ifdef BMODEL_DEBUG
+					qDebug() << "Board not complete, piece that should be below" << curpiece << "is missing";
+					#endif
+					return false;
+				}			
+		}
+
+		// check the next piece
+		if (curpiece%m_cols!=(m_cols-1)) // if we are not on the end of a row
+			if ( // check the next piece
+				(column(curpiece) != (column(curpiece+1)-1) ) ||
+				( row(curpiece) != row(curpiece+1) )
+				) {
+				#ifdef BMODEL_DEBUG
+				qDebug() << "Board not complete, piece that should be after" << curpiece << "is missing";
+				#endif
+				return false;
+			}
+			
+		#ifdef BMODEL_DEBUG
+		qDebug() << "piece" << curpiece << "is ok!";
+		#endif
+
+	}
+	
+	// we made it through, we've won!
+	#ifdef DEBUG
+	qDebug() << "Board Complete!";
+	#endif
+	emit boardComplete();
+	return true;
 }
 
 bool BoardModel::insertPiece(uint& piece)
@@ -114,6 +153,9 @@ bool BoardModel::insertPiece(uint& piece)
 	brd[0]=piece;
 	positions[piece]=0;
 	movePiece(piece,RIGHT);
+
+	// maybe we're feeling lucky?!
+	isComplete();
 	m_inboard++;
 	return true;
 }
@@ -133,20 +175,28 @@ bool BoardModel::removePiece(uint piece)
 	float w=float(r)/RAND_MAX;
 	r= floor((randpieces.size())*w);
 
+	#ifdef BMODEL_DEBUG
+	qDebug() << "Removing piece" << piece << "from board, following randpieces";
+	qDebug() << randpieces;
+	#endif
+
 	//put the piece at the end of the array
 	randpieces.append(piece);
+	#ifdef BMODEL_DEBUG
+	qDebug() << randpieces;
+	#endif
 	//and swap it with the other random piece
-	randpieces.swap(r,randpieces.size());
+	randpieces.swap(r,randpieces.size()-1);
+	#ifdef BMODEL_DEBUG
+	qDebug() << randpieces;
+	#endif
 	
 	m_inboard--;
-	qDebug() << "Removed piece" << piece << "from board";
 	return true;
 }
 
 void BoardModel::movePiece(uint piece, Direction dir)
 {
-
-	assert(piece<m_pieces);
 	uint lastpos=0;
 	uint newpos=positions[piece]; // set to current position
 
@@ -226,10 +276,12 @@ void BoardModel::initRandArray()
 		r=rand();
 		float w=float(r)/RAND_MAX;
 		second = floor(m_pieces*w);
+		#ifdef BMODEL_DEBUG
 		qDebug() << "Exchanging" << first << "and" << second;
+		#endif
 		randpieces.swap(first,second);
 	}
-
-	for (i=0;i<m_pieces;i++)
-		qDebug() << randpieces[i];
+	#ifdef DEBUG
+	qDebug() << "randpieces is" << randpieces;
+	#endif
 }

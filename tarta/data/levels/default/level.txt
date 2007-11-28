@@ -38,6 +38,6 @@ playtime|300|
 livesawarded|3|
 
 // piece rows, piece columns, position rows, position columns
-boardgeometry|5|8|7|8|
+boardgeometry|3|3|7|8|
 
 // TODO: Add more stuff here to make tarta rock even more!
