@@ -119,20 +119,29 @@ void LevelData::loadData()
 {
 	if (m_basedir.isEmpty()) {
 		emit error(0, tr("Empty basedir"));
+		QCoreApplication::processEvents();
 		return;
 	}
+	emit loading(1,tr("Got a Directory"));
+	QCoreApplication::processEvents();
+
 	if (m_basedir.startsWith("http://")) {
 		emit error(1, tr("Gimmeabreak")); // ;)
+		QCoreApplication::processEvents();
 		return;
 	}
 	if (!parseLevel()) {
 		// handles errors by itself
 		return;
 	}
+	emit loading(50,tr("Loading target picture"));
+	QCoreApplication::processEvents();
 	if (!loadTargetPix()){
 		// handles errors by itself
 		return;
 	}
+	emit loading(60,tr("Loading Background picture"));
+	QCoreApplication::processEvents();
 	if (!loadBackgroundPix()){
 		// handles errors by itself
 		return;
@@ -143,9 +152,7 @@ void LevelData::loadData()
 	}
 	//done
 	emit loading(100,tr("Done"));
-	// flush caches, let 100% show eventually before the rest...
 	QCoreApplication::processEvents();
-	QCoreApplication::flush();
 	emit success();
 	m_isdataloaded=true;
 }
@@ -156,6 +163,9 @@ bool LevelData::parseLevel()
 		emit error(2, tr("Could not find level description"));
 		return false;
 	}
+	emit loading(5,tr("Got a Level Description"));
+	QCoreApplication::processEvents();
+
 	QFile file(m_basedir+"/level.txt");
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
 		emit error(3, tr("Could not load level description"));
@@ -165,13 +175,23 @@ bool LevelData::parseLevel()
 	if (!handle_version(firstline)){
 		return false;
 	}
+	emit loading(10,tr("Level Description opened, good version"));
+	QCoreApplication::processEvents();
+
 	linenum=2;
+
+	qint64 sz=file.size();
+	qint64 read=firstline.size();
+
 	while (!file.atEnd()) {
 		QByteArray line = file.readLine();
 		if (!process_line(line)){
 			return false;
 		}
+		read+=line.size();
 		linenum++;
+		emit loading(10+read*30/sz,tr("Loading level description %1/%2").arg(read).arg(sz));
+		QCoreApplication::processEvents();
 	}
 	return true;
 }
@@ -187,6 +207,7 @@ bool LevelData::handle_version(QString line)
 		return false;
 	}
 	return true;
+	
 }
 
 bool LevelData::process_line(QString line)
@@ -404,6 +425,8 @@ bool LevelData::loadBoardPix()
 		emit error(27, "Could not load board picture");
 		return false;
 	}
+	emit loading(70,tr("Cutting up picture"));
+	QCoreApplication::processEvents();
 
 	uint p= m_pieceRows*m_pieceColumns;
 	uint pc=m_pieceColumns;
@@ -434,10 +457,12 @@ bool LevelData::loadBoardPix()
 			<< sx << "," << sy << ")";
 
 		item->setVisible(false);
-		qDebug() << "pieceNum is" << PieceNum;
 		item->setData(PieceNum,i);
 
 		(*m_pieces)[i]=item;
+		emit loading(70+(30*i/p),tr("Cutting up picture %1/%2").arg(i).arg(p));
+		QCoreApplication::processEvents();
+
 	}
 	
 	delete wholepix;

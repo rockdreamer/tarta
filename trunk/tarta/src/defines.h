@@ -22,5 +22,28 @@
 #define DEFINES_H
 
 #define VERSION "0.0.1"
+#define BUILD "0001"
 
+/**
+ * Generic Debugging
+ */
+//#define DEBUG 1
+
+/**
+ * Board Model Debugging
+ */
+//#define BMODEL_DEBUG 1
+
+/**
+ * Level description parser Debugging
+ */
+//#define LPARSER_DEBUG 1
+
+/**
+ * Data Load Debugging
+ */
+//#define LDATA_DEBUG 1
+
+#define SHADOW_X 10
+#define SHADOW_Y 10
 #endif

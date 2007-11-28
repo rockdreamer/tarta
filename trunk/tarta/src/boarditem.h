@@ -38,7 +38,7 @@ class BoardItem: public QGraphicsItem
 {
 
 public:
-    BoardItem(LevelData *leveldata, QGraphicsItem *parent=0);
+    BoardItem(LevelData *leveldata, BoardModel *model, QGraphicsItem *parent=0);
 	QRectF boundingRect() const;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
@@ -51,7 +51,6 @@ protected:
 private:
 	void movePiece(QGraphicsItem *item, uint x, uint y);
 
-	//LevelData *leveldata;
 	QVector<PieceItem*> *pieces;
     QPointF lastpos;
 	QGraphicsItemAnimation *animation;

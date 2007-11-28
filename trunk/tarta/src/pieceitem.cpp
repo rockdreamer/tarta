@@ -17,7 +17,8 @@
  *   Free Software Foundation, Inc., 
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
- 
+
+#include "defines.h" 
 #include "pieceitem.h"
 #include <QDebug>
 #include <QGraphicsSvgItem>
@@ -34,53 +35,63 @@
 PieceItem::PieceItem(const QPixmap& pixmap, QGraphicsItem *target, QGraphicsItem *parent) : QGraphicsItem(parent)
 {
 	Q_UNUSED(parent);
+	
 	setAcceptsHoverEvents ( true );
 	setHandlesChildEvents(true);
+	
 	pix=new QGraphicsPixmapItem(pixmap, this);
 	pix->setZValue(500);
 	this->target=target;
 	qreal scalevalue=qMin( 
 		(qreal)pix->boundingRect().width()/(qreal)target->boundingRect().width() ,
 		(qreal)pix->boundingRect().height()/(qreal)target->boundingRect().height());
+
 	tpos = QPointF(
 	(pix->boundingRect().width()  - (target->boundingRect().width() *scalevalue))/2, 
 	(pix->boundingRect().height() - (target->boundingRect().height()*scalevalue))/2 );
-	QGraphicsRectItem *shadow = new QGraphicsRectItem(pix->boundingRect(), this);
-	QColor sh=Qt::lightGray;
-	sh.setAlpha(50);
-	QBrush b(sh);
-	shadow->setBrush(b);
-	shadow->setPen(Qt::NoPen);
-	shadow->setPos(10,10);
-	shadow->setZValue(0);
-	
+
+	boundrect.setX(0);
+	boundrect.setY(0);
+	boundrect.setWidth(pix->boundingRect().width()+SHADOW_X);
+	boundrect.setHeight(pix->boundingRect().height()+SHADOW_Y);
+
+	path.addRect(pix->boundingRect());
+}
+
+QPainterPath PieceItem::shape() const{
+	return path;
 }
 
 QRectF PieceItem::boundingRect() const
 {
-	//qDebug() << "returned" << pix->boundingRect() << "as piece boundingrect";
-	return pix->boundingRect();
+	return boundrect;
 }
 
 void PieceItem::paint(QPainter *painter,
                    const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-     Q_UNUSED(painter);
-     Q_UNUSED(option);
-     Q_UNUSED(widget);
-	 //painter->drawRect(0, 0, 213, 80);
+	Q_UNUSED(painter);
+	Q_UNUSED(option);
+	Q_UNUSED(widget);
+	QColor sh=Qt::gray;
+	sh.setAlpha(70);
+	QBrush b(sh);
+	painter->setBrush(b);
+	painter->setPen(Qt::NoPen);
+	painter->drawRect(0, 0, pix->boundingRect().width()+SHADOW_X, pix->boundingRect().height()+SHADOW_Y);
 }
 
 void PieceItem::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ){
-	target->setParentItem(this);	
+	target->setParentItem(this);
+	target->setZValue(2000);	
 	target->setPos( tpos );
 	target->setVisible(true);
-	qDebug() << "Mouse entered piece" << data(0);
+	//qDebug() << "Mouse entered piece" << data(0);
 	QGraphicsItem::hoverEnterEvent(event);
 }
 
 void PieceItem::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ){
 	target->setVisible(false);
-	qDebug() << "Mouse left piece" << data(0);
+	//qDebug() << "Mouse left piece" << data(0);
 	QGraphicsItem::hoverLeaveEvent(event);
 }

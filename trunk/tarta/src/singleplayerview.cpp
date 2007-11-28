@@ -20,6 +20,9 @@
  
 #include "singleplayerview.h"
 #include "boarditem.h"
+#include "msgitem.h"
+#include "loadingitem.h"
+#include "boardmodel.h"
 #include "leveldata.h"
 #include <QCoreApplication>
 #include <QGraphicsScene>
@@ -27,9 +30,10 @@
 #include <QGraphicsSvgItem>
 #include <QDebug>
 #include <QFile>
+#include <QTimer>
 
 SinglePlayerView::SinglePlayerView(LevelData *data, QWidget *parent): 
-	QGraphicsView(parent)
+	QGraphicsView(parent), msg(0)
 {
 	scene = new QGraphicsScene;
 	scene->setItemIndexMethod(QGraphicsScene::NoIndex);		
@@ -45,8 +49,30 @@ SinglePlayerView::SinglePlayerView(LevelData *data, QWidget *parent):
     setOptimizationFlag(QGraphicsView::DontClipPainter);
 	setMouseTracking ( true );
 
-	setLevelData(data);
+	loading = new LoadingItem();
+	scene->addItem(loading);
+	centerItem(loading);
+	this->data=data;
+
+	QObject::connect(data, SIGNAL(loading(int, const QString&)), this, SLOT(onDataLoading(int, const QString&)));
+	QObject::connect(data, SIGNAL(error(int, const QString&)), this, SLOT(onDataError(int, const QString&)));
+	QObject::connect(data, SIGNAL(success()), this, SLOT(onDataSuccess()));
+
+	QTimer::singleShot(20, this, SLOT(startView()));
+}
+
+void SinglePlayerView::startView()
+{
 	
+	if (!data->isDataLoaded()){
+		data->loadData();
+	}
+
+	if (!data->isDataLoaded()){
+		return;
+	}
+	
+	initScene();
 }
 
 SinglePlayerView::~SinglePlayerView()
@@ -54,27 +80,25 @@ SinglePlayerView::~SinglePlayerView()
 	if (scene) delete scene;
 }
 
-void SinglePlayerView::setLevelData(LevelData *data)
-{
-	this->data=data;
+void SinglePlayerView::initScene()
+{	
+	model = new BoardModel(
+		data->pieceRows(),
+		data->pieceColumns(),
+		data->placeRows(),
+		data->placeColumns()
+	);
 	
-	QObject::connect(data, SIGNAL(loading(int, const QString&)), this, SLOT(onDataLoading(int, const QString&)));
-	QObject::connect(data, SIGNAL(error(int, const QString&)), this, SLOT(onDataError(int, const QString&)));
-	QObject::connect(data, SIGNAL(success()), this, SLOT(onDataSuccess()));
-	
-	if (!data->isDataLoaded()){
-		data->loadData();
-	}
-	if (!data->isDataLoaded()){
-		qDebug() << "Holy crap!";
-		return;
-	}
-	
+	QObject::connect(model, SIGNAL(boardComplete()), this, SLOT(onBoardComplete()));
+
 	data->bgItem()->setPos(0,0);
 	data->bgItem()->setZValue(0);
 	scene->addItem(data->bgItem());
+	update();
 	
-	board = new BoardItem(data);
+	update();
+	board = new BoardItem(data, model);
+
 	int n=data->pieces()->size();
 	for (int i=0;i<n;i++){
 		PieceItem *item=data->pieces()->at(i);
@@ -100,27 +124,65 @@ void SinglePlayerView::setLevelData(LevelData *data)
 	scene->addItem(board);
 	scene->setSceneRect(data->bgItem()->boundingRect());
 	fitInView(data->bgItem()->boundingRect(),Qt::KeepAspectRatio);
-	
+	centerItem(loading);
+
+}
+
+void SinglePlayerView::centerItem(QGraphicsItem *theitem)
+{
+	theitem->setPos(
+			(sceneRect().width()-theitem->boundingRect().width())/2,
+			(sceneRect().height()-theitem->boundingRect().height())/2);
 }
 
 void SinglePlayerView::onDataLoading(int percent, const QString& description)
 {
-	qDebug() << "Loading at" << percent << "%:" << description;
+	loading->setPct(percent, description);
 }
 
 void SinglePlayerView::onDataError(int code, const QString& description)
 {
+	showMsg(description);
 	qDebug() << "Loading error" << code << ":" << description;
 }
 
 void SinglePlayerView::onDataSuccess()
 {
+	QTimer::singleShot(1000, this, SLOT(hideLoading()));
 	qDebug() << "Data loading success";
+}
+
+void SinglePlayerView::onBoardComplete()
+{
+	showMsg("Level Complete!");
+	qDebug() << "Board Complete!";
+}
+
+void SinglePlayerView::showMsg(const QString& ms) 
+{
+	if (msg) {
+		scene->removeItem(msg);
+		delete msg;
+	}
+	msg = new MsgItem(ms);
+	scene->addItem(msg);
+	centerItem(msg);
+	QTimer::singleShot(1000, this, SLOT(hideMsg()));
+}
+
+void SinglePlayerView::hideMsg()
+{
+	msg->setVisible(false);
+}
+
+void SinglePlayerView::hideLoading()
+{
+	loading->setVisible(false);
 }
 
 void SinglePlayerView::resizeEvent(QResizeEvent *event)
 {
-	if (data->isDataLoaded())
+	if (data && data->isDataLoaded())
 		fitInView(data->bgItem()->boundingRect(),Qt::KeepAspectRatio);
 	QWidget::resizeEvent(event);
 }

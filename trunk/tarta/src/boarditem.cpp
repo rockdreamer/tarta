@@ -17,7 +17,7 @@
  *   Free Software Foundation, Inc., 
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
- 
+#include "defines.h"
 #include "boarditem.h"
 #include "boardmodel.h"
 #include "pieceitem.h"
@@ -38,7 +38,7 @@
 extern const int PieceNum = 0;
 static const int Sensitivity = 5;
  
-BoardItem::BoardItem(LevelData *data, QGraphicsItem *parent) 
+BoardItem::BoardItem(LevelData *data, BoardModel *model, QGraphicsItem *parent) 
 	: QGraphicsItem(parent)
 {
 	track=FALSE;
@@ -47,15 +47,10 @@ BoardItem::BoardItem(LevelData *data, QGraphicsItem *parent)
 	timer = new QTimeLine(300);
 	animation->setTimeLine(timer);
 	
-	model = new BoardModel(
-		data->pieceRows(),
-		data->pieceColumns(),
-		data->placeRows(),
-		data->placeColumns()
-	);
+	this->model=model;
 	pieces=data->pieces();
-	sx=(*pieces)[0]->boundingRect().width();
-	sy=(*pieces)[0]->boundingRect().height();
+	sx=(*pieces)[0]->boundingRect().width()-SHADOW_X;
+	sy=(*pieces)[0]->boundingRect().height()-SHADOW_Y;
 }
 
 
@@ -172,4 +167,5 @@ void BoardItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		movePiece((*pieces)[lastitem],model->column(lastitem), model->row(lastitem));
 		track=FALSE;
 	}
+	model->isComplete();
 }

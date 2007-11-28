@@ -1,21 +1,12 @@
-packaging
-------------
-- compilare su windows
-- package per windows
-- compilare su Mac
-- package per mac
-- icona per mac (tonda?)
-- icona per windows (ico)
-- icona per linux (png) 128x128, 96x96, 64x64, 32x32, 16x16
-_________________________________
+- windows executable
+- windows package
+- Mac executable
+- Mac package
+- icons
 
-icons
-------------
-
-___________________________________
-
-defines
-------------
-
-___________________________________
-
+- Score keeping
+- Score calculation
+- time
+- time bar
+- lives
+- lives ui
