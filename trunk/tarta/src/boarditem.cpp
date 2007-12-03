@@ -39,18 +39,23 @@ extern const int PieceNum = 0;
 static const int Sensitivity = 5;
  
 BoardItem::BoardItem(LevelData *data, BoardModel *model, QGraphicsItem *parent) 
-	: QGraphicsItem(parent)
+	: QObject(0), QGraphicsItem(parent)
 {
 	track=FALSE;
 	//this->leveldata=data;	
-	animation = new QGraphicsItemAnimation();
-	timer = new QTimeLine(300);
-	animation->setTimeLine(timer);
 	
 	this->model=model;
 	pieces=data->pieces();
 	sx=(*pieces)[0]->boundingRect().width()-SHADOW_X;
 	sy=(*pieces)[0]->boundingRect().height()-SHADOW_Y;
+	
+	pieceanimations.resize(pieces->size());
+	piecetlines.resize(pieces->size());
+	for (int i=0;i<pieces->size();i++){
+		pieceanimations[i]=new QGraphicsItemAnimation();
+		piecetlines[i]=new QTimeLine(500);
+		pieceanimations[i]->setTimeLine(piecetlines[i]);
+	}
 }
 
 
@@ -70,9 +75,9 @@ void BoardItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 
 void BoardItem::movePiece(QGraphicsItem *item, uint x, uint y){
 	qDebug() << "moving item"<<  item->data(PieceNum).toInt() << "to" << x*sx << "," << y*sy;
-	animation->setItem(item);
-	animation->setPosAt(1, QPointF(x*sx,y*sy));
-	timer->start();
+	pieceanimations[item->data(PieceNum).toInt()]->setItem(item);
+	pieceanimations[item->data(PieceNum).toInt()]->setPosAt(1, QPointF(x*sx,y*sy));
+	piecetlines[item->data(PieceNum).toInt()]->start();
 }
 
 void BoardItem::mousePressEvent(QGraphicsSceneMouseEvent *event)

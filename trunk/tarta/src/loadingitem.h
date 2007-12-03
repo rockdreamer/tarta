@@ -38,7 +38,7 @@ public slots:
 
 private:
 	QRectF boundrect;
-	QGraphicsTextItem *t;
+	QGraphicsTextItem *l,*p,*d;
 	int pct;
 	
 };

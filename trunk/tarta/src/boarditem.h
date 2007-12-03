@@ -34,14 +34,16 @@ class PieceItem;
 class QGraphicsSvgItem;
 class LevelData;
 
-class BoardItem: public QGraphicsItem
+class BoardItem: public QObject, public QGraphicsItem
 {
+
+	Q_OBJECT
 
 public:
     BoardItem(LevelData *leveldata, BoardModel *model, QGraphicsItem *parent=0);
 	QRectF boundingRect() const;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-
+	
 protected:
 	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 	void mousePressEvent(QGraphicsSceneMouseEvent *event);
@@ -53,8 +55,8 @@ private:
 
 	QVector<PieceItem*> *pieces;
     QPointF lastpos;
-	QGraphicsItemAnimation *animation;
-	QTimeLine *timer;
+	QVector<QGraphicsItemAnimation*> pieceanimations;
+	QVector<QTimeLine*> piecetlines;
 	BoardModel *model;
 	int xdiff,ydiff, lastitem;
 	uint sx,sy;
