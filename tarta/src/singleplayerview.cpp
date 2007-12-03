@@ -32,11 +32,18 @@
 #include <QFile>
 #include <QTimer>
 
-SinglePlayerView::SinglePlayerView(LevelData *data, QWidget *parent): 
-	QGraphicsView(parent), msg(0)
+SinglePlayerView::SinglePlayerView(QWidget *parent): 
+	QGraphicsView(parent)
 {
 	scene = new QGraphicsScene;
 	scene->setItemIndexMethod(QGraphicsScene::NoIndex);		
+	
+	data=olddata=NULL;
+	model=oldmodel=NULL;
+
+	loading=NULL;
+	board=NULL;
+	msg=NULL;
 	
 	setScene(scene);
 	setCacheMode(CacheBackground);
@@ -49,20 +56,18 @@ SinglePlayerView::SinglePlayerView(LevelData *data, QWidget *parent):
     setOptimizationFlag(QGraphicsView::DontClipPainter);
 	setMouseTracking ( true );
 
+}
+
+void SinglePlayerView::setLevelData(LevelData *newData)
+{
 	loading = new LoadingItem();
 	scene->addItem(loading);
-	centerItem(loading);
-	this->data=data;
+	centerOn(loading);
+	this->data=newData;
 
 	QObject::connect(data, SIGNAL(loading(int, const QString&)), this, SLOT(onDataLoading(int, const QString&)));
 	QObject::connect(data, SIGNAL(error(int, const QString&)), this, SLOT(onDataError(int, const QString&)));
 	QObject::connect(data, SIGNAL(success()), this, SLOT(onDataSuccess()));
-
-	QTimer::singleShot(20, this, SLOT(startView()));
-}
-
-void SinglePlayerView::startView()
-{
 	
 	if (!data->isDataLoaded()){
 		data->loadData();
@@ -72,16 +77,6 @@ void SinglePlayerView::startView()
 		return;
 	}
 	
-	initScene();
-}
-
-SinglePlayerView::~SinglePlayerView()
-{
-	if (scene) delete scene;
-}
-
-void SinglePlayerView::initScene()
-{	
 	model = new BoardModel(
 		data->pieceRows(),
 		data->pieceColumns(),
@@ -90,13 +85,10 @@ void SinglePlayerView::initScene()
 	);
 	
 	QObject::connect(model, SIGNAL(boardComplete()), this, SLOT(onBoardComplete()));
-
+	
 	data->bgItem()->setPos(0,0);
 	data->bgItem()->setZValue(0);
 	scene->addItem(data->bgItem());
-	update();
-	
-	update();
 	board = new BoardItem(data, model);
 
 	int n=data->pieces()->size();
@@ -125,12 +117,26 @@ void SinglePlayerView::initScene()
 	scene->setSceneRect(data->bgItem()->boundingRect());
 	fitInView(data->bgItem()->boundingRect(),Qt::KeepAspectRatio);
 	centerItem(loading);
+	
+}
 
+SinglePlayerView::~SinglePlayerView()
+{
+	if (scene) delete scene;
+}
+
+void SinglePlayerView::setLevelsList(const QString& path)
+{
+}
+
+void SinglePlayerView::onLevelComplete()
+{
 }
 
 void SinglePlayerView::centerItem(QGraphicsItem *theitem)
 {
-	theitem->setPos(
+qDebug() << sceneRect().width() << theitem->boundingRect().width() << sceneRect().height() << theitem->boundingRect().height();
+	theitem->setPos(//mapToScene(
 			(sceneRect().width()-theitem->boundingRect().width())/2,
 			(sceneRect().height()-theitem->boundingRect().height())/2);
 }

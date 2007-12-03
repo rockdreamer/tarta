@@ -31,18 +31,20 @@ class LevelData;
 class BoardModel;
 class LoadingItem;
 class MsgItem;
+class QStringList;
+
 class SinglePlayerView: public QGraphicsView
 {
     Q_OBJECT
 
 public:
-    SinglePlayerView(LevelData *data, QWidget *parent = 0);
+    SinglePlayerView(QWidget *parent = 0);
     ~SinglePlayerView();
-	void setLevelData(LevelData *newData);
-	void initScene();
 	
 public slots:
-	void startView();
+	void setLevelsList(const QString& path);
+	void onLevelComplete();
+	void setLevelData(LevelData *newData);
 	void showMsg(const QString& msg);
 	void hideMsg();
 	void hideLoading();
@@ -55,13 +57,16 @@ protected:
 	void resizeEvent(QResizeEvent *event);
 
 private:
+	int currentScore;
 	void centerItem(QGraphicsItem *it);
 	QGraphicsScene *scene;
+	QStringList *levels;
+	QStringListIterator *currentlevel;
 	LoadingItem *loading;
 	MsgItem *msg;
-	LevelData *data;
-	BoardItem *board;
-	BoardModel *model;
+	LevelData *data, *olddata;
+	BoardItem *board, *oldboard;
+	BoardModel *model, *oldmodel;
 };
 
 

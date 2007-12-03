@@ -34,11 +34,21 @@ LoadingItem::LoadingItem(QGraphicsItem *parent) : QObject(0), QGraphicsItem(pare
 	boundrect.setX(0);
 	boundrect.setY(0);
 	boundrect.setWidth(400);
-	boundrect.setHeight(300);
+	boundrect.setHeight(200);
+	
+	l = new QGraphicsTextItem(this);
+	l->setFont(QFont("Helvetica", 28, QFont::Bold));
+	l->setPlainText("Loading");
+	l->setPos(150,10);
 
-	t = new QGraphicsTextItem(this);
-	t->setTextWidth(380);
-	t->setPos(10,110);
+	p = new QGraphicsTextItem(this);
+	p->setFont(QFont("Helvetica", 28, QFont::Bold));
+	p->setPos(170,55);
+	
+	d = new QGraphicsTextItem(this);
+	p->setFont(QFont("Helvetica", 18, QFont::Bold));
+	d->setTextWidth(380);
+	d->setPos(10,90);
 }
 
 QRectF LoadingItem::boundingRect() const
@@ -51,28 +61,32 @@ void LoadingItem::paint(QPainter *painter,
 {
 	Q_UNUSED(option);
 	Q_UNUSED(widget);
-	QColor bg=Qt::blue;
+	
+	
+	QColor bg=Qt::cyan;
 	bg.setAlpha(70);
 	QBrush b(bg);
 	painter->setBrush(b);
-	painter->setPen(Qt::black);
-	painter->drawRoundRect(0, 0, 400, 300,5,5);
+	painter->setPen(Qt::yellow);
+	painter->drawRoundRect(0, 0, 400, 120,10,30);
 
-	QColor pc=Qt::red;
-	pc.setAlpha(254);
-	QBrush p(pc);
-	painter->setBrush(pc);
-	painter->drawRoundRect(10, 10, (pct*380)/100, 100,5,5);
+	QLinearGradient linearGrad(QPointF(0, 0), QPointF(400, 0));
+	linearGrad.setColorAt(0, Qt::yellow);
+	linearGrad.setColorAt(1, Qt::red);
+	QBrush p(linearGrad);
+	painter->setBrush(p);
+	painter->drawRoundRect(10, 50, (pct*380)/100, 30,5,5);
 	
 }
 
 void LoadingItem::setPct(int percent, const QString& msg)
 {
 	pct=percent;
-	t->setPlainText(msg);
+	d->setPlainText(msg);
+	p->setPlainText(QString("%1%").arg(percent));
 	update();
 	QCoreApplication::processEvents();
 	QWaitCondition sleep;
 	QMutex m;
-	sleep.wait(&m,1);   // two seconds	update();
+	sleep.wait(&m,10);   // two seconds	update();
 }

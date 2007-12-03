@@ -36,7 +36,11 @@ public:
     ~Tarta();
 	void loadLevelName(QString levelname);
 
+public slots:
+	void startSinglePlayer();
+
 private slots:
+	void loadLevel();
     void about();
     void aboutQt();
 

@@ -30,18 +30,19 @@
 #include <QBrush>
 #include <QPainter>
 #include <QPen>
+#include <QFont>
 #include "math.h"
 
 MsgItem::MsgItem(QString text, QGraphicsItem *parent) : QGraphicsItem(parent)
 {
 	txt= new QGraphicsTextItem(this);
-	txt->setHtml(text);
+	txt->setPlainText(text);
+	txt->setFont(QFont("Helvetica", 28, QFont::Bold));
 	txt->setPos(5,5);
 	boundrect.setX(0);
 	boundrect.setY(0);
 	boundrect.setWidth(txt->boundingRect().width()+10);
 	boundrect.setHeight(txt->boundingRect().height()+10);
-
 }
 
 QRectF MsgItem::boundingRect() const
@@ -54,7 +55,7 @@ void MsgItem::paint(QPainter *painter,
 {
 	Q_UNUSED(option);
 	Q_UNUSED(widget);
-	QColor bg=Qt::blue;
+	QColor bg=Qt::cyan;
 	bg.setAlpha(70);
 	QBrush b(bg);
 	painter->setBrush(b);

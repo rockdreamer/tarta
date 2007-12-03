@@ -21,6 +21,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QMenu>
+#include <QTimer>
 #include <QMenuBar>
 #include <QApplication>
 #include <QStatusBar>
@@ -32,6 +33,8 @@ Tarta::Tarta() : QMainWindow(0)
 {
 	QMenu * file = new QMenu( tr("&File"), this );
     menuBar()->addMenu( file );
+    file->addAction( tr("&Play"), this, SLOT( startSinglePlayer() ),  Qt::CTRL + Qt::Key_P );
+	file->addSeparator();
     file->addAction( tr("&Quit"), qApp, SLOT( closeAllWindows() ),  Qt::CTRL + Qt::Key_Q );
 
     menuBar()->addSeparator();
@@ -44,23 +47,31 @@ Tarta::Tarta() : QMainWindow(0)
     help->addSeparator();
     help->addAction( tr("What's &This"), this, SLOT(whatsThis()), Qt::SHIFT + Qt::Key_F1);
 
-	this->setAttribute(Qt::WA_Hover);
-	currentLevel = new LevelData();
-	
-	currentLevel->setBaseDir("/Users/rdfm/tarta/data/levels/default/");
-    
-	e = new SinglePlayerView(currentLevel, this);
-    
-	e->setFocus();
-    setCentralWidget( e );
-    
 	setWindowTitle(tr("Tarta"));
 	resize(800,600);
 
-	statusBar()->showMessage( tr("Ready"), 2000 );
-	
+	this->setAttribute(Qt::WA_Hover);
+    
 }
 
+void Tarta::startSinglePlayer()
+{
+
+	currentLevel = new LevelData();	
+	currentLevel->setBaseDir("/Users/rdfm/tarta/data/levels/default/");
+    
+	e = new SinglePlayerView(this);
+	e->setLevelsList("/Users/rdfm/tarta/data/levels/singleplayer.txt");
+	e->setFocus();
+    setCentralWidget( e );
+	QTimer::singleShot(20, this, SLOT(loadLevel()));
+
+}
+
+void Tarta::loadLevel()
+{
+	e->setLevelData(currentLevel);
+}
 
 Tarta::~Tarta()
 {

@@ -28,7 +28,7 @@ backgroundpic|background.svg|
 targetpic|target.svg|
 
 // optional
-boardpic|boardimg.png|
+boardpic|boardimg.jpg|
 
 //////////////////////////////////////////////////////////////////
 // Level options
