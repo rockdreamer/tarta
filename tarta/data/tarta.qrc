@@ -12,5 +12,7 @@
 <file>levels/default/boardimg.jpg</file>
 <file>levels/default/time.png</file>
 <file>levels/default/xmas.png</file>
+<file>levels/testlevel/level.txt</file>
+<file>levels/testlevel/boardimg.jpg</file>
 </qresource>
 </RCC>

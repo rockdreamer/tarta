@@ -36,6 +36,8 @@ LevelData::LevelData( QObject *parent ):
 		QObject( parent )
 {
 	m_isdataloaded = false;
+	m_lifepixmap=NULL;
+
 }
 
 void LevelData::setBaseDir( const QString& baseDir )
@@ -212,7 +214,7 @@ bool LevelData::parseDefaults()
 	while ( !file.atEnd() ) {
 		QByteArray line = file.readLine();
 
-		if ( !process_line( line ) ) {
+		if ( !process_line( line, true ) ) {
 			return false;
 		}
 
@@ -262,7 +264,7 @@ bool LevelData::parseLevel()
 	while ( !file.atEnd() ) {
 		QByteArray line = file.readLine();
 
-		if ( !process_line( line ) ) {
+		if ( !process_line( line, false ) ) {
 			return false;
 		}
 
@@ -292,7 +294,7 @@ bool LevelData::handle_version( QString line )
 
 }
 
-bool LevelData::process_line( QString line )
+bool LevelData::process_line( QString line, bool defaults )
 {
 	// remove whitespace at the beginning and at the end
 	line = line.trimmed();
@@ -446,7 +448,10 @@ bool LevelData::process_line( QString line )
 			return false;
 		}
 
-		m_bgfile = t;
+		if (defaults)
+			m_bgfile = ":/levels/default/"+t;
+		else
+			m_bgfile = m_basedir+t;
 
 		qDebug() << "Parsed backgroundpic filename:" << m_bgfile;
 		return true;
@@ -460,7 +465,10 @@ bool LevelData::process_line( QString line )
 			return false;
 		}
 
-		m_targetfile = t;
+		if (defaults)
+			m_targetfile = ":/levels/default/"+t;
+		else
+			m_targetfile = m_basedir+t;
 
 		qDebug() << "Parsed targetpic filename:" << m_targetfile;
 		return true;
@@ -474,7 +482,10 @@ bool LevelData::process_line( QString line )
 			return false;
 		}
 
-		m_picfile = t;
+		if (defaults)
+			m_picfile = ":/levels/default/"+t;
+		else
+			m_picfile = m_basedir+t;
 
 		qDebug() << "Parsed boardpic filename:" << m_picfile;
 		return true;
@@ -497,12 +508,18 @@ bool LevelData::process_line( QString line )
 		}
 
 		if ( line.section( '|', 1, 1 ) == "file" ) {
-			if ( !QFile::exists( m_basedir + line.section( '|', 2, 2 ) ) ) {
+			QString m_bgbrushfile;
+			if (defaults)
+				m_bgbrushfile = ":/levels/default/"+line.section( '|', 2, 2 );
+			else
+				m_bgbrushfile = m_basedir+line.section( '|', 2, 2 );
+
+			if ( !QFile::exists( m_bgbrushfile  ) ) {
 				emit error( 253, "Non existent board background file" );
 				return false;
 			}
 
-			QPixmap *m_bg = new QPixmap( m_basedir + line.section( '|', 2, 2 ) );
+			QPixmap *m_bg = new QPixmap( m_bgbrushfile );
 
 			if ( !m_bg ) {
 				emit error( 2254, tr( "Invalid board pixmap at line %1" ).arg( linenum ) );
@@ -512,6 +529,93 @@ bool LevelData::process_line( QString line )
 			m_bgbrush.setTexture( *m_bg );
 
 			qDebug() << "Parsed background pixmap" << line;
+			return true;
+		}
+
+		return false;
+	}
+
+	if ( line.startsWith( "timerbrush" ) ) {
+		if ( line.section( '|', 1, 1 ) == "color" ) {
+			QColor m_timercolor;
+			m_timercolor.setNamedColor( line.section( '|', 2, 2 ) );
+
+			if ( !m_timercolor.isValid() ) {
+				emit error( 22, tr( "Invalid Timer color at line %1" ).arg( linenum ) );
+				return false;
+			}
+
+			m_timerbrush.setColor( m_timercolor );
+
+			qDebug() << "Parsed timer color" << m_timercolor.name();
+			return true;
+		}
+
+		if ( line.section( '|', 1, 1 ) == "file" ) {
+			QString m_timerfile;
+			if (defaults)
+				m_timerfile = ":/levels/default/"+line.section( '|', 2, 2 );
+			else
+				m_timerfile = m_basedir+line.section( '|', 2, 2 );
+
+			if ( !QFile::exists( m_timerfile  ) ) {
+				emit error( 253, "Non existent timer file" );
+				return false;
+			}
+
+			QPixmap *m_tmp = new QPixmap( m_timerfile );
+
+			if ( !m_tmp ) {
+				emit error( 2254, tr( "Invalid timer pixmap at line %1" ).arg( linenum ) );
+				return false;
+			}
+
+			m_timerbrush.setTexture( *m_tmp );
+
+
+			qDebug() << "Parsed timer brush pixmap" << line;
+			return true;
+		}
+
+		return false;
+	}
+
+	if ( line.startsWith( "lifebrush" ) ) {
+		if ( line.section( '|', 1, 1 ) == "color" ) {
+			QColor m_lifecolor;
+			m_lifecolor.setNamedColor( line.section( '|', 2, 2 ) );
+
+			if ( !m_lifecolor.isValid() ) {
+				emit error( 22, tr( "Invalid life color at line %1" ).arg( linenum ) );
+				return false;
+			}
+
+			m_lifebrush.setColor( m_lifecolor );
+
+			qDebug() << "Parsed life color" << m_lifecolor.name();
+			return true;
+		}
+
+		if ( line.section( '|', 1, 1 ) == "file" ) {
+			QString m_lifefile;
+			if (defaults)
+				m_lifefile = ":/levels/default/"+line.section( '|', 2, 2 );
+			else
+				m_lifefile = m_basedir+line.section( '|', 2, 2 );
+
+			if ( !QFile::exists( m_lifefile  ) ) {
+				emit error( 253, "Non existent life file" );
+				return false;
+			}
+
+			m_lifepixmap = new QPixmap( m_lifefile );
+
+			if ( !m_lifepixmap ) {
+				emit error( 2254, tr( "Invalid life pixmap at line %1" ).arg( linenum ) );
+				return false;
+			}
+
+			qDebug() << "Parsed life pixmap" << line;
 			return true;
 		}
 
@@ -557,15 +661,15 @@ bool LevelData::loadBoardPix()
 
 	//Load the board image
 
-	if ( !QFile::exists( m_basedir + m_picfile ) ) {
+	if ( !QFile::exists( m_picfile ) ) {
 		emit error( 25, "Non existent board picture file" );
 		return false;
 	}
 
 	if ( m_picfile.endsWith( "svg" ) ) {
-		qDebug() << "Loading" << m_basedir + m_picfile;
+		qDebug() << "Loading" <<  m_picfile;
 		// svg is a particular case, we need to render the thing before we can slice and dice
-		QSvgRenderer bigmama( m_basedir + m_picfile );
+		QSvgRenderer bigmama( m_picfile );
 
 		if ( !bigmama.isValid() ) {
 			emit error( 26, "Invalid board picture svg file" );
@@ -578,8 +682,8 @@ bool LevelData::loadBoardPix()
 		bigmama.render( &p );
 		wholepix = new QPixmap( QPixmap::fromImage( bg ) );
 	} else {
-		qDebug() << "Loading" << m_basedir + m_picfile;
-		wholepix = new QPixmap( m_basedir + m_picfile );
+		qDebug() << "Loading" <<  m_picfile;
+		wholepix = new QPixmap(  m_picfile );
 	}
 
 	if ( !wholepix ) {
@@ -639,11 +743,11 @@ bool LevelData::loadTargetPix()
 {
 	m_targetitem = NULL;
 
-	if ( QFile::exists( m_basedir + m_targetfile ) ) {
+	if ( QFile::exists(  m_targetfile ) ) {
 		if ( m_targetfile.endsWith( "svg" ) ) {
-			m_targetitem = new QGraphicsSvgItem( m_basedir + m_targetfile );
+			m_targetitem = new QGraphicsSvgItem(  m_targetfile );
 		} else {
-			m_targetitem = new QGraphicsPixmapItem( m_basedir + m_targetfile );
+			m_targetitem = new QGraphicsPixmapItem(  m_targetfile );
 		}
 	}
 
@@ -659,11 +763,11 @@ bool LevelData::loadBackgroundPix()
 {
 	m_levelbackground = NULL;
 
-	if ( QFile::exists( m_basedir + m_bgfile ) ) {
+	if ( QFile::exists( m_bgfile ) ) {
 		if ( m_bgfile.endsWith( "svg" ) ) {
-			m_levelbackground = new QGraphicsSvgItem( m_basedir + m_bgfile );
+			m_levelbackground = new QGraphicsSvgItem( m_bgfile );
 		} else {
-			m_levelbackground = new QGraphicsPixmapItem( m_basedir + m_bgfile );
+			m_levelbackground = new QGraphicsPixmapItem(  m_bgfile );
 		}
 	}
 

@@ -141,10 +141,10 @@ bool Tarta::setLevelsList( const QString& path )
 void Tarta::loadNextLevel()
 {
 	if ( currentlevelname->hasNext() ) {
-		qDebug() << "About to load level" << ( "/Users/rdfm/tarta/data/levels/" + currentlevelname->peekNext() + "/" );
+		qDebug() << "About to load level" << ( ":/levels/" + currentlevelname->peekNext() + "/" );
 		prevLevel = currentLevel;
 		currentLevel = new LevelData();
-		currentLevel->setBaseDir( "/Users/rdfm/tarta/data/levels/" + currentlevelname->next() + "/" );
+		currentLevel->setBaseDir( ":/levels/" + currentlevelname->next() + "/" );
 		connect( e, SIGNAL( levelLoaded() ), this, SLOT( delPrevLevel() ) );
 		connect( e, SIGNAL( levelWon() ), this, SLOT( loadNextLevel() ) );
 		e->setLevelData( currentLevel );
