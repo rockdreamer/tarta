@@ -88,5 +88,6 @@ void LoadingItem::setPct( int percent, const QString& msg )
 	QCoreApplication::processEvents();
 	QWaitCondition sleep;
 	QMutex m;
+	m.lock();
 	sleep.wait( &m, 10 );   // two seconds	update();
 }
