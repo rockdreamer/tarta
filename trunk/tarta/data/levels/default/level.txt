@@ -3,8 +3,10 @@
 // Sample level configuration file
 // values are stored in name|value|value|value|....| format
 // order is preserved, | is not a valid name or value character, no escaping is performed
+// This file defines defaults for all levels, it's values can be superseded in 
+// other level descriptions
 
-// Obligatory, ya know
+// Obligatory, please change this for your levels
 name|default level|
 
 ////////////////////////////////////////////////////////////////////
@@ -12,35 +14,40 @@ name|default level|
 ////////////////////////////////////////////////////////////////////
 // first two numbers give the upper left point, second two give the size of the item
 
-// optional, alternative board where the pic goes
+// Geometry of the board where the picture pieces move
 boardrect|50|58|922|505|
 
-// optional, timer rectangle
+// timer rectangle geometry and theme, place files on the same directory as the level.txt file
 timerect|10|710|700|10|
-timerbrush|time.png|
+timerbrush|file|time.png|
+//timerbrush|color|blue|
 
-// optional, use RGB numbers or svg color names
+// This brush is painted on the background, colors and background pics are supported
 // backgroundbrush|color|#000000|
 backgroundbrush|file|xmas.png|
 
-// optional
+// This is the picture that defines the graphic elements on the screen
 backgroundpic|background.png|
 
-// optional
+// This svg will be overlayed on pieces when you hover with the mouse
 targetpic|target.svg|
 
-// optional
+// The board picture
 boardpic|boardimg.jpg|
 
-// optional
-lifepic|life.png|
+// This will represent a "life"
+lifebrush|file|life.png|
+//lifebrush|color|red|
+
 //////////////////////////////////////////////////////////////////
 // Level options
 //////////////////////////////////////////////////////////////////
+// Time for successfully completing the level in seconds
 playtime|300|
-// if successfully finished
+// if successfully finished, extra lives are awarded
 livesawarded|3|
 
+// carve up the board! In:
 // piece rows, piece columns, position rows, position columns
 boardgeometry|3|3|7|8|
 

@@ -23,7 +23,7 @@ src/singleplayerview.cpp \
 src/leveldata.cpp \
 src/loadingitem.cpp \
 src/msgitem.cpp \
-           
+
 HEADERS += \
 src/about.h \
 src/tarta.h \
@@ -34,6 +34,7 @@ src/singleplayerview.h \
 src/leveldata.h \
 src/loadingitem.h \
 src/msgitem.h \
+src/defines.h
 
 RESOURCES = data/tarta.qrc
 

@@ -27,6 +27,7 @@
 
 class QRect;
 class QGraphicsItem;
+class QPixmap;
 
 class LevelData: public QObject
 {
@@ -39,6 +40,9 @@ public:
 	QRect boardRect();
 	QRect timeRect();
 	QBrush bgBrush();
+	QBrush timerBrush();
+	QBrush lifeBrush();
+	QPixmap *lifePixmap();
 	QGraphicsItem *bgItem();
 	QGraphicsItem *targetItem();
 	QVector<PieceItem*> *pieces();
@@ -64,12 +68,13 @@ private:
 	bool loadBoardPix();
 	bool loadTargetPix();
 	bool loadBackgroundPix();
-	bool process_line( QString line );
+	bool process_line( QString line, bool defaults );
 	bool handle_version( QString line );
 	bool m_isdataloaded;
 	QString m_level;
 	QRect m_boardrect, m_timerect;
-	QBrush m_bgbrush;
+	QBrush m_bgbrush, m_timerbrush, m_lifebrush;
+	QPixmap *m_lifepixmap;
 	QGraphicsItem *m_levelbackground;
 	QGraphicsItem *m_targetitem;
 	QVector<PieceItem*> *m_pieces;
