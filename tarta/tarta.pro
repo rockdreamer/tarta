@@ -14,6 +14,7 @@ QT += svg
 TARGET = tarta
 
 SOURCES += \
+src/about.cpp \
 src/tarta.cpp \
 src/main.cpp \
 src/boarditem.cpp \
@@ -25,6 +26,7 @@ src/loadingitem.cpp \
 src/msgitem.cpp \
            
 HEADERS += \
+src/about.h \
 src/tarta.h \
 src/boarditem.h \
 src/boardmodel.h \

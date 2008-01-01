@@ -1,0 +1,6 @@
+# levels file
+# The game loads levels, one at a time, in the order presented here
+# blank lines are ignored
+default
+testlevel
+dalevel

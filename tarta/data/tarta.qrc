@@ -1,14 +1,16 @@
 <RCC>
 <qresource prefix="/" >
 
+<file>levels.lst</file>
 <file>credits.html</file>
+<file>about.png</file>
+<file>tarta-intro.png</file>
 <file>levels/default/level.txt</file>
-<file>levels/default/background.svg</file>
+<file>levels/default/life.png</file>
+<file>levels/default/background.png</file>
 <file>levels/default/target.svg</file>
-<file>levels/default/boardimg.png</file>
-<file>levels/testlevel/level.txt</file>
-<file>levels/testlevel/background.svg</file>
-<file>levels/testlevel/target.svg</file>
-<file>levels/testlevel/boardimg.jpg</file>
+<file>levels/default/boardimg.jpg</file>
+<file>levels/default/time.png</file>
+<file>levels/default/xmas.png</file>
 </qresource>
 </RCC>

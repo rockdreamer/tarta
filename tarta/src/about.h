@@ -18,45 +18,33 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
  
-#ifndef TARTA_H
-#define TARTA_H
+#ifndef ABOUT_H
+#define ABOUT_H
 
-#include <QMainWindow>
-#include <QString>
-#include <QFile>
-#include <QDebug>
-
+#include <QWidget>
+class QVBoxLayout;
 class QLabel;
-class LevelData;
-class SinglePlayerView;
+class QTextBrowser;
+class QSpacerItem;
+class QHBoxLayout;
+class QPushButton;
 
-class Tarta: public QMainWindow
+class About: public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    Tarta();
-    ~Tarta();
-	void loadLevelName(QString levelname);
+    About(QWidget *parent=0);
 
-public slots:
-	void startSinglePlayer();
-
-private slots:
-	void loadNextLevel();
-    void about();
-    void aboutQt();
-	void delPrevLevel();
-	
 private:
-	bool setLevelsList(const QString& path);
-	bool listloaded, isplaying, ispaused;
-	QLabel *intro;
-    SinglePlayerView *e;
-	LevelData *currentLevel, *prevLevel;
-	QStringList *levels;
-	QStringListIterator *currentlevelname;
-	
+	QVBoxLayout *vboxLayout;
+    QLabel *label;
+    QTextBrowser *textBrowser;
+    QHBoxLayout *hboxLayout;
+    QSpacerItem *spacerItem;
+    QPushButton *done;
+    QSpacerItem *spacerItem1;
+
 };
 
 

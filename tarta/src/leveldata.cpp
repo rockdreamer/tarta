@@ -63,9 +63,9 @@ QRect LevelData::timeRect()
 	return m_timerect;
 }
 
-QColor LevelData::bgColor()
+QBrush LevelData::bgBrush()
 {
-	return m_backgroundcolor;
+	return m_bgbrush;
 }
 
 QGraphicsItem * LevelData::bgItem()
@@ -130,17 +130,21 @@ void LevelData::loadData()
 		QCoreApplication::processEvents();
 		return;
 	}
+	if (!parseDefaults()) {
+		// handles errors by itself
+		return;
+	}
 	if (!parseLevel()) {
 		// handles errors by itself
 		return;
 	}
-	emit loading(50,tr("Loading target picture"));
+	emit loading(70,tr("Loading target picture"));
 	QCoreApplication::processEvents();
 	if (!loadTargetPix()){
 		// handles errors by itself
 		return;
 	}
-	emit loading(60,tr("Loading Background picture"));
+	emit loading(75,tr("Loading Background picture"));
 	QCoreApplication::processEvents();
 	if (!loadBackgroundPix()){
 		// handles errors by itself
@@ -157,16 +161,16 @@ void LevelData::loadData()
 	m_isdataloaded=true;
 }
 
-bool LevelData::parseLevel()
+bool LevelData::parseDefaults()
 {
-	if (!QFile::exists(m_basedir+"/level.txt")){
-		emit error(2, tr("Could not find level description"));
+	if (!QFile::exists(":levels/default/level.txt")){
+		emit error(2, tr("Could not find default level description"));
 		return false;
 	}
-	emit loading(5,tr("Got a Level Description"));
+	emit loading(5,tr("Got a Default Level Description"));
 	QCoreApplication::processEvents();
 
-	QFile file(m_basedir+"/level.txt");
+	QFile file(":levels/default/level.txt");
 	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
 		emit error(3, tr("Could not load level description"));
 		return false;
@@ -191,6 +195,45 @@ bool LevelData::parseLevel()
 		read+=line.size();
 		linenum++;
 		emit loading(10+read*30/sz,tr("Loading level description %1/%2").arg(read).arg(sz));
+		QCoreApplication::processEvents();
+	}
+	return true;
+}
+
+bool LevelData::parseLevel()
+{
+	if (!QFile::exists(m_basedir+"/level.txt")){
+		emit error(2, tr("Could not find level description"));
+		return false;
+	}
+	emit loading(45,tr("Got a Level Description"));
+	QCoreApplication::processEvents();
+
+	QFile file(m_basedir+"/level.txt");
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+		emit error(3, tr("Could not load level description"));
+		return false;
+	}
+	QByteArray firstline = file.readLine();
+	if (!handle_version(firstline)){
+		return false;
+	}
+	emit loading(50,tr("Level Description opened, good version"));
+	QCoreApplication::processEvents();
+
+	linenum=2;
+
+	qint64 sz=file.size();
+	qint64 read=firstline.size();
+
+	while (!file.atEnd()) {
+		QByteArray line = file.readLine();
+		if (!process_line(line)){
+			return false;
+		}
+		read+=line.size();
+		linenum++;
+		emit loading(50+read*20/sz,tr("Loading level description %1/%2").arg(read).arg(sz));
 		QCoreApplication::processEvents();
 	}
 	return true;
@@ -356,14 +399,33 @@ bool LevelData::process_line(QString line)
 		return true;
 	}
 
-	if (line.startsWith("backgroundcolor")){
-		m_backgroundcolor.setNamedColor(line.section('|',1,1));
-		if (!m_backgroundcolor.isValid()){
-			emit error(22, tr("Invalid Backgroundcolor at line %1").arg(linenum));
-			return false;
+	if (line.startsWith("backgroundbrush")){
+		if (line.section('|',1,1)=="color"){
+			QColor m_backgroundcolor;
+			m_backgroundcolor.setNamedColor(line.section('|',2,2));
+			if (!m_backgroundcolor.isValid()){
+				emit error(22, tr("Invalid Backgroundcolor at line %1").arg(linenum));
+				return false;
+			}
+			m_bgbrush.setColor(m_backgroundcolor);
+			qDebug() << "Parsed background color"<< m_backgroundcolor.name();
+			return true;
 		}
-		qDebug() << "Parsed backgroundcolor"<< m_backgroundcolor.name();
-		return true;
+		if (line.section('|',1,1)=="file"){
+			if (!QFile::exists(m_basedir+line.section('|',2,2))){
+				emit error(253, "Non existent board background file");
+				return false;
+			}
+			QPixmap *m_bg = new QPixmap(m_basedir+line.section('|',2,2));
+			if (!m_bg){
+				emit error(2254, tr("Invalid board pixmap at line %1").arg(linenum));
+				return false;
+			}
+			m_bgbrush.setTexture(*m_bg);
+			qDebug() << "Parsed background pixmap"<< line;
+			return true;
+		}
+		return false;
 	}
 
 	if (line.startsWith("playtime")){

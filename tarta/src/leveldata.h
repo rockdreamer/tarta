@@ -22,9 +22,9 @@
 #define LEVELDATA_H
 
 #include <QObject>
+#include <QBrush>;
 #include "pieceitem.h"
 class QRect;
-class QColor;
 class QGraphicsItem;
 
 class LevelData: public QObject
@@ -37,7 +37,7 @@ public:
 	QString levelName();
 	QRect boardRect();
 	QRect timeRect();
-	QColor bgColor();
+	QBrush bgBrush();
 	QGraphicsItem *bgItem();
 	QGraphicsItem *targetItem();
 	QVector<PieceItem*> *pieces();
@@ -58,6 +58,7 @@ signals:
 	void success(); 
 
 private:
+	bool parseDefaults();
 	bool parseLevel();
 	bool loadBoardPix();
 	bool loadTargetPix();
@@ -67,7 +68,7 @@ private:
 	bool m_isdataloaded;
 	QString m_level;
 	QRect m_boardrect, m_timerect;
-	QColor m_backgroundcolor;
+	QBrush m_bgbrush;
 	QGraphicsItem *m_levelbackground;
 	QGraphicsItem *m_targetitem;
 	QVector<PieceItem*> *m_pieces;

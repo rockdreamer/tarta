@@ -27,46 +27,68 @@ class QGraphicsScene;
 class QResizeEvent;
 class BoardItem;
 class QGraphicsSvgItem;
+class QGraphicsRectItem;
 class LevelData;
 class BoardModel;
 class LoadingItem;
 class MsgItem;
 class QStringList;
+class QGraphicsItemAnimation;
+class QTimeLine;
+
 
 class SinglePlayerView: public QGraphicsView
 {
     Q_OBJECT
 
 public:
-    SinglePlayerView(QWidget *parent = 0);
+    SinglePlayerView(QPixmap prevGb, QWidget *parent = 0);
     ~SinglePlayerView();
 	
 public slots:
-	void setLevelsList(const QString& path);
-	void onLevelComplete();
 	void setLevelData(LevelData *newData);
 	void showMsg(const QString& msg);
-	void hideMsg();
-	void hideLoading();
 	void onDataLoading(int percent, const QString& description);
 	void onDataError(int code, const QString& description);
+	void onLevelComplete();
 	void onDataSuccess();
 	void onBoardComplete();
-		
+	
+signals:
+	void levelLoaded();
+	void levelWon();
+	void gameOver();
+	
 protected:
 	void resizeEvent(QResizeEvent *event);
+	
+private slots:
+	void updateLives();
+	void hideMsg();
+	void hideLoading();
+	void cleanUpLBG();
+	void cleanUpLoading();
+	void cleanUpMsg();
+	void showready();
+	void showset();
+	void showgo();
 
 private:
 	int currentScore;
-	void centerItem(QGraphicsItem *it);
+	int timeLeft;
+	int lives;
 	QGraphicsScene *scene;
-	QStringList *levels;
-	QStringListIterator *currentlevel;
 	LoadingItem *loading;
+	QGraphicsItemAnimation *msganimation, *lanimation, *lbanimation;
+	QGraphicsRectItem *lbrect;
+	QGraphicsPixmapItem *prevbg;
+	QGraphicsPixmapItem *life1, *life2, *life3, *life4;
+	QTimeLine *msgtline, *ltline, *lbtline;
 	MsgItem *msg;
 	LevelData *data, *olddata;
 	BoardItem *board, *oldboard;
 	BoardModel *model, *oldmodel;
+	bool isloading;
 };
 
 
