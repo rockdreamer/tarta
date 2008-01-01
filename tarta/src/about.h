@@ -14,14 +14,15 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the
- *   Free Software Foundation, Inc., 
+ *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
- 
+
 #ifndef ABOUT_H
 #define ABOUT_H
 
 #include <QWidget>
+
 class QVBoxLayout;
 class QLabel;
 class QTextBrowser;
@@ -34,16 +35,16 @@ class About: public QWidget
 	Q_OBJECT
 
 public:
-    About(QWidget *parent=0);
+	About( QWidget *parent = 0 );
 
 private:
 	QVBoxLayout *vboxLayout;
-    QLabel *label;
-    QTextBrowser *textBrowser;
-    QHBoxLayout *hboxLayout;
-    QSpacerItem *spacerItem;
-    QPushButton *done;
-    QSpacerItem *spacerItem1;
+	QLabel *label;
+	QTextBrowser *textBrowser;
+	QHBoxLayout *hboxLayout;
+	QSpacerItem *spacerItem;
+	QPushButton *done;
+	QSpacerItem *spacerItem1;
 
 };
 

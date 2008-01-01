@@ -14,10 +14,10 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the
- *   Free Software Foundation, Inc., 
+ *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
- 
+
 #ifndef SINGLEPLAYERVIEW_H
 #define SINGLEPLAYERVIEW_H
 
@@ -39,29 +39,29 @@ class QTimeLine;
 
 class SinglePlayerView: public QGraphicsView
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    SinglePlayerView(QPixmap prevGb, QWidget *parent = 0);
-    ~SinglePlayerView();
-	
+	SinglePlayerView( QPixmap prevGb, QWidget *parent = 0 );
+	~SinglePlayerView();
+
 public slots:
-	void setLevelData(LevelData *newData);
-	void showMsg(const QString& msg);
-	void onDataLoading(int percent, const QString& description);
-	void onDataError(int code, const QString& description);
+	void setLevelData( LevelData *newData );
+	void showMsg( const QString& msg );
+	void onDataLoading( int percent, const QString& description );
+	void onDataError( int code, const QString& description );
 	void onLevelComplete();
 	void onDataSuccess();
 	void onBoardComplete();
-	
+
 signals:
 	void levelLoaded();
 	void levelWon();
 	void gameOver();
-	
+
 protected:
-	void resizeEvent(QResizeEvent *event);
-	
+	void resizeEvent( QResizeEvent *event );
+
 private slots:
 	void updateLives();
 	void hideMsg();

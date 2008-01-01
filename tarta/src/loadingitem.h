@@ -14,10 +14,10 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the
- *   Free Software Foundation, Inc., 
+ *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
- 
+
 #ifndef LOADINGITEM_H
 #define LOADINGITEM_H
 
@@ -27,20 +27,20 @@
 class LoadingItem: public QObject, public QGraphicsItem
 {
 	Q_OBJECT
-	
+
 public:
-    LoadingItem(QGraphicsItem *parent=0);
+	LoadingItem( QGraphicsItem *parent = 0 );
 	QRectF boundingRect() const;
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+	void paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0 );
 
 public slots:
-	void setPct(int percent, const QString& msg="");
+	void setPct( int percent, const QString& msg = "" );
 
 private:
 	QRectF boundrect;
-	QGraphicsTextItem *l,*p,*d;
+	QGraphicsTextItem *l, *p, *d;
 	int pct;
-	
+
 };
 
 

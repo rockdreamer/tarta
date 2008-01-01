@@ -1,11 +1,10 @@
 TEMPLATE = app
 
 CONFIG += debug
-CONFIG +=release
-CONFIG	+= qt warn_on
+CONFIG += qt warn_on
 
 INCLUDEPATH += src
-LANGUAGE	= C++
+LANGUAGE = C++
 
 QT += svg
 #soon :)
@@ -36,18 +35,26 @@ src/leveldata.h \
 src/loadingitem.h \
 src/msgitem.h \
 
-RESOURCES  = data/tarta.qrc
+RESOURCES = data/tarta.qrc
 
 unix {
-	UI_DIR = .ui
-	MOC_DIR = .moc
-	OBJECTS_DIR = .obj
+    UI_DIR = .ui
+    MOC_DIR = .moc
+    OBJECTS_DIR = .obj
 }
 
 mac {
-	ICON = packaging/mac/tarta.icns
+    ICON = packaging/mac/tarta.icns
 }
 
 win32 {
-#	RC_FILE=packaging/win/tarta.rc
+    #	RC_FILE=packaging/win/tarta.rc
 }
+CONFIG -= release
+
+OBJECTS_DIR = .obj
+
+UI_DIR = .ui
+
+MOC_DIR = .moc
+
