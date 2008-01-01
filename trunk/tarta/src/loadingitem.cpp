@@ -34,7 +34,7 @@ LoadingItem::LoadingItem(QGraphicsItem *parent) : QObject(0), QGraphicsItem(pare
 	boundrect.setX(0);
 	boundrect.setY(0);
 	boundrect.setWidth(400);
-	boundrect.setHeight(200);
+	boundrect.setHeight(120);
 	
 	l = new QGraphicsTextItem(this);
 	l->setFont(QFont("Helvetica", 28, QFont::Bold));

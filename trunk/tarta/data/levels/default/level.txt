@@ -13,16 +13,18 @@ name|default level|
 // first two numbers give the upper left point, second two give the size of the item
 
 // optional, alternative board where the pic goes
-boardrect|200|55|800|600|
+boardrect|50|58|922|505|
 
-// optional, alternative timer rectangle
+// optional, timer rectangle
 timerect|10|710|700|10|
+timerbrush|time.png|
 
 // optional, use RGB numbers or svg color names
-backgroundcolor|#000000|
+// backgroundbrush|color|#000000|
+backgroundbrush|file|xmas.png|
 
 // optional
-backgroundpic|background.svg|
+backgroundpic|background.png|
 
 // optional
 targetpic|target.svg|
@@ -30,6 +32,8 @@ targetpic|target.svg|
 // optional
 boardpic|boardimg.jpg|
 
+// optional
+lifepic|life.png|
 //////////////////////////////////////////////////////////////////
 // Level options
 //////////////////////////////////////////////////////////////////
