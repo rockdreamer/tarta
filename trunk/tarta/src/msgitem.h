@@ -14,10 +14,10 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the
- *   Free Software Foundation, Inc., 
+ *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
- 
+
 #ifndef MSGITEM_H
 #define MSGITEM_H
 
@@ -28,9 +28,9 @@ class QGraphicsTextItem;
 class MsgItem: public QGraphicsItem
 {
 public:
-    MsgItem(const QString txt, QGraphicsItem *parent=0);
+	MsgItem( const QString txt, QGraphicsItem *parent = 0 );
 	QRectF boundingRect() const;
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+	void paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0 );
 private:
 	QGraphicsTextItem *txt;
 	QRectF boundrect;

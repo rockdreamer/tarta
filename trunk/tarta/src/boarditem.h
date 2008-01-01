@@ -14,10 +14,10 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the
- *   Free Software Foundation, Inc., 
+ *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
- 
+
 #ifndef BOARDITEM_H
 #define BOARDITEM_H
 
@@ -40,28 +40,28 @@ class BoardItem: public QObject, public QGraphicsItem
 	Q_OBJECT
 
 public:
-    BoardItem(LevelData *leveldata, BoardModel *model, QGraphicsItem *parent=0);
+	BoardItem( LevelData *leveldata, BoardModel *model, QGraphicsItem *parent = 0 );
 	QRectF boundingRect() const;
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-	
+	void paint( QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0 );
+
 protected:
-	void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-	void mousePressEvent(QGraphicsSceneMouseEvent *event);
-	void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-	void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
-	
+	void mouseDoubleClickEvent( QGraphicsSceneMouseEvent *event );
+	void mousePressEvent( QGraphicsSceneMouseEvent *event );
+	void mouseReleaseEvent( QGraphicsSceneMouseEvent *event );
+	void mouseMoveEvent( QGraphicsSceneMouseEvent *event );
+
 private:
-	void movePiece(QGraphicsItem *item, uint x, uint y);
+	void movePiece( QGraphicsItem *item, uint x, uint y );
 
 	QVector<PieceItem*> *pieces;
-    QPointF lastpos;
+	QPointF lastpos;
 	QVector<QGraphicsItemAnimation*> pieceanimations;
 	QVector<QTimeLine*> piecetlines;
 	BoardModel *model;
-	int xdiff,ydiff, lastitem;
-	uint sx,sy;
-	bool track;	
-	QGraphicsSvgItem *bg,*target;
+	int xdiff, ydiff, lastitem;
+	uint sx, sy;
+	bool track;
+	QGraphicsSvgItem *bg, *target;
 
 };
 

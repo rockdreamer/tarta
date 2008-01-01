@@ -14,7 +14,7 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the
- *   Free Software Foundation, Inc., 
+ *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
 
@@ -28,35 +28,34 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-About::About(QWidget *parent):QWidget(parent)
+About::About( QWidget *parent ) : QWidget( parent )
 {
-    
-    resize(400, 500);
-    vboxLayout = new QVBoxLayout(this);
-	vboxLayout->setContentsMargins(2,2,2,2);
-    label = new QLabel(this);
-	label->setPixmap(QPixmap(":about.png"));
-    vboxLayout->addWidget(label);
+	resize( 400, 500 );
+	vboxLayout = new QVBoxLayout( this );
+	vboxLayout->setContentsMargins( 2, 2, 2, 2 );
+	label = new QLabel( this );
+	label->setPixmap( QPixmap( ":about.png" ) );
+	vboxLayout->addWidget( label );
 
-    textBrowser = new QTextBrowser(this);
-	textBrowser->setSource(QUrl("qrc:/credits.html"));
-	textBrowser->setOpenExternalLinks(true);
-    vboxLayout->addWidget(textBrowser);
+	textBrowser = new QTextBrowser( this );
+	textBrowser->setSource( QUrl( "qrc:/credits.html" ) );
+	textBrowser->setOpenExternalLinks( true );
+	vboxLayout->addWidget( textBrowser );
 
-    hboxLayout = new QHBoxLayout();
-	hboxLayout->setContentsMargins(2,2,2,2);
+	hboxLayout = new QHBoxLayout();
+	hboxLayout->setContentsMargins( 2, 2, 2, 2 );
 
-    spacerItem = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-    hboxLayout->addItem(spacerItem);
+	spacerItem = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	hboxLayout->addItem( spacerItem );
 
-    done = new QPushButton(this);
-    done->setText(tr("Tartalicious!"));
-	connect(done, SIGNAL(clicked()), this, SLOT(close()));
-    hboxLayout->addWidget(done);
+	done = new QPushButton( this );
+	done->setText( tr( "Tartalicious!" ) );
+	connect( done, SIGNAL( clicked() ), this, SLOT( close() ) );
+	hboxLayout->addWidget( done );
 
-    spacerItem1 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+	spacerItem1 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
 
-    hboxLayout->addItem(spacerItem1);
+	hboxLayout->addItem( spacerItem1 );
 
-    vboxLayout->addLayout(hboxLayout);
+	vboxLayout->addLayout( hboxLayout );
 }

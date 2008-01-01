@@ -14,10 +14,10 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the
- *   Free Software Foundation, Inc., 
+ *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
- 
+
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QMenu>
@@ -31,109 +31,123 @@
 #include "leveldata.h"
 #include "about.h"
 
-Tarta::Tarta() : QMainWindow(0)
+Tarta::Tarta() : QMainWindow( 0 )
 {
-	QMenu * file = new QMenu( tr("&File"), this );
-    menuBar()->addMenu( file );
-    file->addAction( tr("&Play"), this, SLOT( startSinglePlayer() ),  Qt::CTRL + Qt::Key_P );
-    file->addAction( tr("&Next Level"), this, SLOT(loadNextLevel() ),  Qt::CTRL + Qt::Key_N );
+	QMenu * file = new QMenu( tr( "&File" ), this );
+	menuBar()->addMenu( file );
+	file->addAction( tr( "&Play" ), this, SLOT( startSinglePlayer() ),  Qt::CTRL + Qt::Key_P );
+	file->addAction( tr( "&Next Level" ), this, SLOT( loadNextLevel() ),  Qt::CTRL + Qt::Key_N );
 	file->addSeparator();
-    file->addAction( tr("&Quit"), qApp, SLOT( closeAllWindows() ),  Qt::CTRL + Qt::Key_Q );
+	file->addAction( tr( "&Quit" ), qApp, SLOT( closeAllWindows() ),  Qt::CTRL + Qt::Key_Q );
 
-    menuBar()->addSeparator();
+	menuBar()->addSeparator();
 
-    QMenu * help = new QMenu( tr("&Help"), this );
-    menuBar()->addMenu(  help );
+	QMenu * help = new QMenu( tr( "&Help" ), this );
+	menuBar()->addMenu( help );
 
-    help->addAction( tr("&About"), this, SLOT(about()), Qt::Key_F1 );
-    help->addAction( tr("About &Qt"), this, SLOT(aboutQt()));
-    
-	setWindowTitle(tr("Tarta"));
-	intro = new QLabel(this);
-	intro->setPixmap(QPixmap(":/tarta-intro.png"));
-	intro->setScaledContents(true);
+	help->addAction( tr( "&About" ), this, SLOT( about() ), Qt::Key_F1 );
+	help->addAction( tr( "About &Qt" ), this, SLOT( aboutQt() ) );
+
+	setWindowTitle( tr( "Tarta" ) );
+	intro = new QLabel( this );
+	intro->setPixmap( QPixmap( ":/tarta-intro.png" ) );
+	intro->setScaledContents( true );
 	setCentralWidget( intro );
-	resize(800,600);
+	resize( 800, 600 );
 
-	this->setAttribute(Qt::WA_Hover);
+	this->setAttribute( Qt::WA_Hover );
 
-	prevLevel=currentLevel=NULL;
-	levels=NULL;
-	listloaded=false;
-	isplaying=false;
-	ispaused=false;
-	
+	prevLevel = currentLevel = NULL;
+	levels = NULL;
+	listloaded = false;
+	isplaying = false;
+	ispaused = false;
+
 }
 
 void Tarta::startSinglePlayer()
 {
-	if (intro) {
-		intro->setVisible(false);
+	if ( intro ) {
+		intro->setVisible( false );
 		intro->deleteLater();
-		intro=NULL;
+		intro = NULL;
 	}
-	e = new SinglePlayerView(QPixmap(":/tarta-intro.png"), this);
-	e->setFocus();
-    setCentralWidget( e );
 
-	if (!setLevelsList(":/levels.lst")){
-		e->onDataError(0,"Could not load level list");
+	e = new SinglePlayerView( QPixmap( ":/tarta-intro.png" ), this );
+
+	e->setFocus();
+	setCentralWidget( e );
+
+	if ( !setLevelsList( ":/levels.lst" ) ) {
+		e->onDataError( 0, "Could not load level list" );
 		return;
 	} else {
-		listloaded=true;
+		listloaded = true;
 	}
-	    
-	QTimer::singleShot(20, this, SLOT(loadNextLevel()));
+
+	QTimer::singleShot( 20, this, SLOT( loadNextLevel() ) );
 
 }
 
-bool Tarta::setLevelsList(const QString& path)
+bool Tarta::setLevelsList( const QString& path )
 {
-	if (levels) delete levels;
+	if ( levels ) delete levels;
+
 	levels = new QStringList;
 
-	if (!QFile::exists(path)){
+	if ( !QFile::exists( path ) ) {
 		return false;
 	}
-	QFile file(path);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)){
+
+	QFile file( path );
+
+	if ( !file.open( QIODevice::ReadOnly | QIODevice::Text ) ) {
 		return false;
 	}
-	while (!file.atEnd()) {
+
+	while ( !file.atEnd() ) {
 		QByteArray line = file.readLine();
 		// remove whitespace at the beginning and at the end
-		line=line.trimmed();
+		line = line.trimmed();
 		// empty Lines
-		if (line.isEmpty())
+
+		if ( line.isEmpty() )
 			continue;
+
 		// Comment lines, ignore
-		if (line.startsWith("#"))
+		if ( line.startsWith( "#" ) )
 			continue;
+
 		// look for comments after the line
-		int hasComment=line.indexOf("#");
-		if (hasComment!= -1){
-			line.truncate(hasComment-1);
+		int hasComment = line.indexOf( "#" );
+
+		if ( hasComment != -1 ) {
+			line.truncate( hasComment - 1 );
 			// trim more whitespace
-			line=line.trimmed();
+			line = line.trimmed();
 		}
-		qDebug() << "Parsing cleaned line:"<< line;
-		levels->append(line);
+
+		qDebug() << "Parsing cleaned line:" << line;
+
+		levels->append( line );
 	}
+
 	qDebug() << "Levels list" << *levels;
-	currentlevelname= new QStringListIterator(*levels);
+
+	currentlevelname = new QStringListIterator( *levels );
 	return true;
 }
 
 void Tarta::loadNextLevel()
 {
-	if (currentlevelname->hasNext()) {
-		qDebug() << "About to load level" << ("/Users/rdfm/tarta/data/levels/"+currentlevelname->peekNext()+"/");
+	if ( currentlevelname->hasNext() ) {
+		qDebug() << "About to load level" << ( "/Users/rdfm/tarta/data/levels/" + currentlevelname->peekNext() + "/" );
 		prevLevel = currentLevel;
-		currentLevel = new LevelData();	
-		currentLevel->setBaseDir("/Users/rdfm/tarta/data/levels/"+currentlevelname->next()+"/");
-		connect(e, SIGNAL(levelLoaded()), this, SLOT(delPrevLevel()));
-		connect(e, SIGNAL(levelWon()), this, SLOT(loadNextLevel()));
-		e->setLevelData(currentLevel);
+		currentLevel = new LevelData();
+		currentLevel->setBaseDir( "/Users/rdfm/tarta/data/levels/" + currentlevelname->next() + "/" );
+		connect( e, SIGNAL( levelLoaded() ), this, SLOT( delPrevLevel() ) );
+		connect( e, SIGNAL( levelWon() ), this, SLOT( loadNextLevel() ) );
+		e->setLevelData( currentLevel );
 	} else {
 		// Game is finished, do something pretty....
 	}
@@ -146,7 +160,7 @@ Tarta::~Tarta()
 
 void Tarta::delPrevLevel()
 {
-	if (prevLevel) prevLevel->deleteLater();
+	if ( prevLevel ) prevLevel->deleteLater();
 }
 
 void Tarta::about()
@@ -158,5 +172,5 @@ void Tarta::about()
 
 void Tarta::aboutQt()
 {
-    QMessageBox::aboutQt( this, tr("Tarta") );
+	QMessageBox::aboutQt( this, tr( "Tarta" ) );
 }

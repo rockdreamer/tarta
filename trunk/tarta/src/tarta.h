@@ -14,10 +14,10 @@
  *
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the
- *   Free Software Foundation, Inc., 
+ *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  **/
- 
+
 #ifndef TARTA_H
 #define TARTA_H
 
@@ -32,31 +32,31 @@ class SinglePlayerView;
 
 class Tarta: public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    Tarta();
-    ~Tarta();
-	void loadLevelName(QString levelname);
+	Tarta();
+	~Tarta();
+	void loadLevelName( QString levelname );
 
 public slots:
 	void startSinglePlayer();
 
 private slots:
 	void loadNextLevel();
-    void about();
-    void aboutQt();
+	void about();
+	void aboutQt();
 	void delPrevLevel();
-	
+
 private:
-	bool setLevelsList(const QString& path);
+	bool setLevelsList( const QString& path );
 	bool listloaded, isplaying, ispaused;
 	QLabel *intro;
-    SinglePlayerView *e;
+	SinglePlayerView *e;
 	LevelData *currentLevel, *prevLevel;
 	QStringList *levels;
 	QStringListIterator *currentlevelname;
-	
+
 };
 
 
