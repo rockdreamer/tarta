@@ -60,6 +60,11 @@ QRect LevelData::boardRect()
 	return m_boardrect;
 }
 
+QRect LevelData::lifeRect()
+{
+	return m_liferect;
+}
+
 QRect LevelData::timeRect()
 {
 	return m_timerect;
@@ -68,6 +73,16 @@ QRect LevelData::timeRect()
 QBrush LevelData::bgBrush()
 {
 	return m_bgbrush;
+}
+
+QBrush LevelData::timerBrush()
+{
+	return m_timerbrush;
+}
+
+QPixmap* LevelData::lifePixmap()
+{
+	return m_lifepixmap;
 }
 
 QGraphicsItem * LevelData::bgItem()
@@ -401,6 +416,42 @@ bool LevelData::process_line( QString line, bool defaults )
 		m_timerect = QRect( x, y, w, h );
 
 		qDebug() << "Parsed Timerrect:" << m_timerect;
+		return true;
+	}
+
+	if ( line.startsWith( "liferect" ) ) {
+		bool ok = true;
+		int x = line.section( '|', 1, 1 ).toInt( &ok );
+
+		if ( !ok ) {
+			emit error( 11, tr( "Invalid liferect x at line %1" ).arg( linenum ) );
+			return false;
+		}
+
+		int y = line.section( '|', 2, 2 ).toInt( &ok );
+
+		if ( !ok ) {
+			emit error( 12, tr( "Invalid liferect y at line %1" ).arg( linenum ) );
+			return false;
+		}
+
+		int w = line.section( '|', 3, 3 ).toInt( &ok );
+
+		if ( !ok ) {
+			emit error( 13, tr( "Invalid liferect w at line %1" ).arg( linenum ) );
+			return false;
+		}
+
+		int h = line.section( '|', 4, 4 ).toInt( &ok );
+
+		if ( !ok ) {
+			emit error( 14, tr( "Invalid liferect h at line %1" ).arg( linenum ) );
+			return false;
+		}
+
+		m_liferect = QRect( x, y, w, h );
+
+		qDebug() << "Parsed liferect:" << m_liferect;
 		return true;
 	}
 

@@ -64,6 +64,7 @@ protected:
 
 private slots:
 	void updateLives();
+	void updateTimer();
 	void hideMsg();
 	void hideLoading();
 	void cleanUpLBG();
@@ -75,12 +76,12 @@ private slots:
 
 private:
 	int currentScore;
-	int timeLeft;
+	int timeLeft, totalTime;
 	int lives;
 	QGraphicsScene *scene;
 	LoadingItem *loading;
 	QGraphicsItemAnimation *msganimation, *lanimation, *lbanimation;
-	QGraphicsRectItem *lbrect;
+	QGraphicsRectItem *lbrect, *timerrect;
 	QGraphicsPixmapItem *prevbg;
 	QGraphicsPixmapItem *life1, *life2, *life3, *life4;
 	QTimeLine *msgtline, *ltline, *lbtline;

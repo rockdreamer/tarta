@@ -52,7 +52,7 @@ SinglePlayerView::SinglePlayerView( QPixmap prevBg, QWidget *parent ) :
 	isloading = false;
 	currentScore = 0;
 	timeLeft = 0;
-	lives = 3;
+	lives = 5;
 
 	setScene( scene );
 	setCacheMode( CacheBackground );
@@ -134,11 +134,39 @@ void SinglePlayerView::setLevelData( LevelData *newData )
 	scene->addItem( board );
 
 	// Add Lives
-	//life1= new QGraphicsPixmapItem(data->)
-	//updateLives();
+
+	if ( data->lifePixmap() ) {
+		int x0=data->lifeRect().x();
+		int y0=data->lifeRect().y();
+		int dx=data->lifeRect().width()/4;
+		int dy=data->lifeRect().height();
+		qDebug() << "Life position (" << x0 << y0 << ") and size ("<<dx<<dy<<")";
+
+		QPixmap s=data->lifePixmap()->scaled(QSize(dx,dy), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		qDebug() << "Life position (" << x0 << y0 << ") and size" << s.size();
+		life1 = new QGraphicsPixmapItem( s );
+		life2 = new QGraphicsPixmapItem( s );
+		life3 = new QGraphicsPixmapItem( s );
+		life4 = new QGraphicsPixmapItem( s );
+		life1->setPos( x0, y0 );
+		life2->setPos( x0+dx, y0 );
+		life3->setPos( x0+2*dx, y0 );
+		life4->setPos( x0+3*dx, y0 );
+		scene->addItem(life1);
+		scene->addItem(life2);
+		scene->addItem(life3);
+		scene->addItem(life4);
+
+	}
+
+	updateLives();
 
 	// Add Time
-
+	totalTime=timeLeft= data->time();
+	timerrect=new QGraphicsRectItem(data->timeRect());
+	timerrect->setBrush(data->timerBrush());
+	scene->addItem(timerrect);
+	updateTimer();
 	// Add Score
 
 	scene->setSceneRect( data->bgItem()->boundingRect() );
@@ -175,6 +203,15 @@ void SinglePlayerView::onLevelComplete()
 
 void SinglePlayerView::updateLives()
 {
+	life1->setVisible(( lives >= 1 ) );
+	life2->setVisible(( lives >= 2 ) );
+	life3->setVisible(( lives >= 3 ) );
+	life4->setVisible(( lives >= 4 ) );
+}
+
+void SinglePlayerView::updateTimer()
+{
+	timerrect->scale(1,(qreal)timeLeft/(qreal)totalTime);
 }
 
 void SinglePlayerView::onDataLoading( int percent, const QString& description )
