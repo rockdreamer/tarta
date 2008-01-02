@@ -39,6 +39,7 @@ public:
 	QString levelName();
 	QRect boardRect();
 	QRect timeRect();
+	QRect lifeRect();
 	QBrush bgBrush();
 	QBrush timerBrush();
 	QBrush lifeBrush();
@@ -72,7 +73,7 @@ private:
 	bool handle_version( QString line );
 	bool m_isdataloaded;
 	QString m_level;
-	QRect m_boardrect, m_timerect;
+	QRect m_boardrect, m_timerect, m_liferect;
 	QBrush m_bgbrush, m_timerbrush, m_lifebrush;
 	QPixmap *m_lifepixmap;
 	QGraphicsItem *m_levelbackground;
